@@ -22,9 +22,9 @@ var projection = d3.geo.mercator();
 var gemeinden = d3.geo.path().projection(projection);
 projection.scale(1).translate([0, 0]);
 
-d3.json("gemeinden.json", function(data)
+d3.json("gemeinden.json", function(grenzen)
 	{	
-	var map = topojson.feature(data, data.objects.gemeinden);
+	var map = topojson.feature(grenzen, grenzen.objects.gemeinden);
 		
 	b = gemeinden.bounds(map);	
 	box = d3.geo.bounds(map);	
@@ -33,13 +33,7 @@ d3.json("gemeinden.json", function(data)
 	
 	d3.csv("gemeindeergebnisse.csv", function(ergebnisse)
 		{
-		for (var i = 0; i < ergebnisse.length; i++)
-			{
-			for (var x in ergebnisse[i])
-				{
-				if (x != "GKZ" && x != "Gebietsname") ergebnisse[i][x] = +ergebnisse[i][x];
-				}			
-			}		
+		// hier gehts los
 		});
 	});
 

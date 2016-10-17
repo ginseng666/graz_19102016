@@ -23,7 +23,7 @@ var gemeinden = d3.geo.path().projection(projection);
 projection.scale(1).translate([0, 0]);
 
 d3.json("gemeinden.json", function(grenzen)
-	{	
+	{
 	var map = topojson.feature(grenzen, grenzen.objects.gemeinden);
 		
 	b = gemeinden.bounds(map);	
@@ -39,11 +39,11 @@ d3.json("gemeinden.json", function(grenzen)
 			{
 			for (var x in ergebnisse[i])
 				{
-				if (x != "GKZ" && x != "Gebietsname") ergebnisse[i][x] = +ergebnisse[i][x];  //strings in zahlen umwandeln - alternativ via kandidaten-array plus wahlberechtigte, gültige usw.
+				if (x != "GKZ" && x != "Gebietsname") ergebnisse[i][x] = +ergebnisse[i][x];  //strings in zahlen umwandeln - alternativ via kandidaten-array plus wahlberechtigte, gÃ¼ltige usw.
 				}			
 			
 			//if (ergebnisse[i].GKZ.slice(-2) != "00" && ergebnisse[i].GKZ.slice(-2) != "99")  //wien-problem
-			if (ergebnisse[i].GKZ == "G90000" || (ergebnisse[i].GKZ.slice(-2) != "00" && ergebnisse[i].GKZ.slice(-2) != "99"))  //lösung wien? händisch ergänzen; berechnen; gkz im topojson anpassen
+			if (ergebnisse[i].GKZ == "G90000" || (ergebnisse[i].GKZ.slice(-2) != "00" && ergebnisse[i].GKZ.slice(-2) != "99"))  //lÃ¶sung wien? hÃ¤ndisch ergÃ¤nzen; berechnen; gkz im topojson anpassen
 				{
 				gemeindeliste[ergebnisse[i].GKZ] = {};
 				
@@ -56,18 +56,18 @@ d3.json("gemeinden.json", function(grenzen)
 			}		
 
 		//experimentierfeld
-		//farbskala; min/max herausfinden - händisch, programmatisch
+		//farbskala; min/max herausfinden - hÃ¤ndisch, programmatisch
 		//var colorscale = d3.scale.linear().domain([0.02, 0.38]).range([0.1, 1]);
 		svg.selectAll("path")
 			.data(map.features)
 			.enter()
 			.append("path")
 			.attr("d", gemeinden)
-			.style("stroke", "black")  //weglassen, umfärben
-			.style("fill", farben.Griss)  //andere person; andere farbskala, zb eine farbe unterdurchschnittlich, eine farbe überdurchschnittlich
+			.style("stroke", "black")  //weglassen, umfÃ¤rben
+			.style("fill", farben.Griss)  //andere person; andere farbskala, zb eine farbe unterdurchschnittlich, eine farbe Ã¼berdurchschnittlich
 			.style("fill-opacity", function(d) { return gemeindeliste["G" + d.properties.iso].Griss; })  //fehlersuche via console
 			//.style("fill-opacity", function(d) { return colorscale(gemeindeliste["G" + d.properties.iso].Griss); })
-			//.on("mouseover", function() { d3.select(this).style("fill-opacity", 1); });  //verschiedene varianten; rückgängig machen?
+			//.on("mouseover", function() { d3.select(this).style("fill-opacity", 1); });  //verschiedene varianten; rÃ¼ckgÃ¤ngig machen?
 		});
 	});
 </script>

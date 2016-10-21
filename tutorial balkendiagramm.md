@@ -17,12 +17,12 @@ Der Code kann in jedem Textprogramm geschrieben werden, ein etwas besserer Texte
 
 Wenn man Code schreibt, passieren zwangsläufig jede Menge Fehler, vom Tippfehler bis zur vergessenen Klammer. Damit man diese Fehler auch sehen kann, sollte man beim Testen die Javascript-Console im Browser offen haben. Mit F12 öffnet man in verschiedenen Browsern mehrere Entwicklungstools, unter denen sich auch die Console befindet.
 
-![Screenshot Console](https://github.com/ginseng666/graz_19102016/blob/master/console.jpg) 
+![Screenshot Console](https://github.com/ginseng666/graz_19102016/blob/master/img/console.jpg) 
 (Console in Firefox 49)
 
 Ebenfalls nützlich ist der Inspector (Firefox)/Elements (Chrome)/Dom Inspector (Explorer): Er zeigt den gesamten Inhalt der Seite an. Wenn man also ein Element darstellen will, es aber nicht erscheint und auch kein Fehler in der Console ausgegeben wird, dann kann man es hier suchen (und findet vermutlich den Grund, warum es nicht dargestellt wird - etwa fehlende geschlossene `<>` oder fehlerhafte Koordinaten).
 
-![Screenshot Inspector](https://github.com/ginseng666/graz_19102016/blob/master/inspector.jpg) 
+![Screenshot Inspector](https://github.com/ginseng666/graz_19102016/blob/master/img/inspector.jpg) 
 (Inspector in Firefox 49)
 
 ###Das Grundgerüst
@@ -105,7 +105,7 @@ console.log("Funktioniert");
 
 Wenn wir nun die Console (mit F12) öffnen, dann sollte dort das Wort "Funktioniert" stehen. Ist das nicht der Fall (und es steht auch keine Fehlermeldung dort), dann ist Javascript im Browser blockiert (etwa durch Sicherheitseinstellungen) und muss erst aktiviert werden.
 
-![Screenshot Console Funktioniert](https://github.com/ginseng666/graz_19102016/blob/master/console_funktioniert.jpg) 
+![Screenshot Console Funktioniert](https://github.com/ginseng666/graz_19102016/blob/master/img/console_funktioniert.jpg) 
 
 
 Hilfreich können auch die Zahlenangaben rechts sein: Sie stehen für die Zeile und die Spalte, in der der Befehl steht, der die Ausgabe erzeugt. Ein Klick darauf zeigt den Code an.
@@ -120,7 +120,7 @@ var height = window.innerHeight;
 ```
 Der Befehl `window.innerWidth` gibt die Breite des Fensters als Zahl zurück (siehe [hier](https://developer.mozilla.org/en/docs/Web/API/window/innerWidth), `window.innerHeight` macht das Gleiche für die Höhe. Zum Testen kann man in der Console diese Befehle eingeben, dann erhält man die entsprechenden Werte.
 
-![Screenshot Console innerWidth](https://github.com/ginseng666/graz_19102016/blob/master/console_width.jpg) 
+![Screenshot Console innerWidth](https://github.com/ginseng666/graz_19102016/blob/master/img/console_width.jpg) 
 
 
 Das SVG würde nun das gesamte Browserfenster ausfüllen. Das kann (browserabhängig) dazu führen, dass Scrollbalken erscheinen, da es minimal über den verfügbaren Platz hinausreicht. Daher reduzieren wir die Breite und Höhe auf jeweils 95% und erzeugen das SVG:
@@ -139,7 +139,7 @@ Wir speichern das SVG gleich in der Variablen `svg`, um danach einfacher darauf 
 
 Der Inspector im Browser sollte das SVG-Element bereits anzeigen. Am Bildschirm sieht man (noch) nichts).
 
-![Screenshot Inspector SVG](https://github.com/ginseng666/graz_19102016/blob/master/inspector_svg.jpg) 
+![Screenshot Inspector SVG](https://github.com/ginseng666/graz_19102016/blob/master/img/inspector_svg.jpg) 
 
 
 Dieser Schritt zeigt gut, wie die Befehle in d3.js aufgebaut sind: 
@@ -214,7 +214,7 @@ svg.append("rect")
 
 Damit die Balken nebeneinander stehen, verschieben wir sie jeweils um die Breite 50 plus 5 weiteren Pixeln, um einen kleinen Abstand zu haben. Beim Attribut `height` verwenden wir den Stimmenanteil der KandidatInnen.
 
-![Screenshot Balken 1](https://github.com/ginseng666/graz_19102016/blob/master/balken_1.jpg) 
+![Screenshot Balken 1](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_1.jpg) 
 
 
 Das geht schon in die richtige Richtung, intuitiv würde man aber Balken von unten nach oben erwarten. Die Grafik steht auf dem Kopf, da - wie oben geschrieben - das Koordinatensystem oben links beginnt. Nachdem man keine negative Höhe zeichnen kann, müssen wir umdenken: Wir setzen die y-Koordinate (bezeichnet die linke obere Ecke) dorthin, wo die Säule aufhören soll, basierend auf einer gemeinsamen Grundlinie bei 100. Die Höhe bleibt gleich, dafür geben wir jedem Element eine eigene Farbe:
@@ -242,4 +242,4 @@ svg.append("rect")
   .style("fill", "red");
 ```
 
-![Screenshot Balken 2](https://github.com/ginseng666/graz_19102016/blob/master/balken_2.jpg) 
+![Screenshot Balken 2](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_2.jpg) 

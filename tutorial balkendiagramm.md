@@ -17,6 +17,8 @@ Der Code kann in jedem Textprogramm geschrieben werden, ein etwas besserer Texte
 
 Wenn man Code schreibt, passieren zwangsläufig jede Menge Fehler, vom Tippfehler bis zur vergessenen Klammer. Damit man diese Fehler auch sehen kann, sollte man beim Testen die Javascript-Console im Browser offen haben. Mit F12 öffnet man in verschiedenen Browsern mehrere Entwicklungstools, unter denen sich auch die Console befindet.
 
+![Screenshot Console](https://github.com/ginseng666/graz_19102016/console.jpg "Screenshot Console") (Console Firefox 49)
+
 Ebenfalls nützlich ist der Inspector (Firefox)/Elements (Chrome)/Dom Inspector (Explorer): Er zeigt den gesamten Inhalt der Seite an. Wenn man also ein Element darstellen will, es aber nicht erscheint und auch kein Fehler in der Console ausgegeben wird, dann kann man es hier suchen (und findet vermutlich den Grund, warum es nicht dargestellt wird - etwa fehlende geschlossene <> oder fehlerhafte Koordinaten).
 
 

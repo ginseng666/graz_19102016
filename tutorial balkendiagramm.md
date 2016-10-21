@@ -217,7 +217,7 @@ Damit die Balken nebeneinander stehen, verschieben wir sie jeweils um die Breite
 ![Screenshot Balken 1](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_1.jpg) 
 
 
-Das geht schon in die richtige Richtung, intuitiv würde man aber Balken von unten nach oben erwarten. Die Grafik steht auf dem Kopf, da - wie oben geschrieben - das Koordinatensystem oben links beginnt. Nachdem man keine negative Höhe zeichnen kann, müssen wir umdenken: Wir setzen die y-Koordinate (bezeichnet die linke obere Ecke) dorthin, wo die Säule aufhören soll, basierend auf einer gemeinsamen Grundlinie bei 100. Die Höhe bleibt gleich, dafür geben wir jedem Element eine eigene Farbe:
+Das geht schon in die richtige Richtung, intuitiv würde man aber Balken von unten nach oben erwarten. Die Grafik steht auf dem Kopf, da - wie oben geschrieben - das Koordinatensystem oben links beginnt. Nachdem man keine negative Höhe zeichnen kann, müssen wir umdenken: Wir setzen die y-Koordinate (bezeichnet die linke obere Ecke) dorthin, wo die Säule aufhören soll, basierend auf einer gemeinsamen Grundlinie bei 100. Die Höhe bleibt gleich, dafür geben wir jedem Element eine eigene Farbe (für Farbnamen siehe [hier](https://en.wikipedia.org/wiki/Web_colors):
 
 ```javascript
 svg.append("rect")
@@ -243,3 +243,138 @@ svg.append("rect")
 ```
 
 ![Screenshot Balken 2](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_2.jpg) 
+
+
+###Variable Größe
+Nachdem wir schon die Größe des SVG variabel gemacht haben, liegt es nahe, dasselbe für die Größe des Diagramms zu machen. So können wir die Balkenbreite aus der verfügbaren Breite berechnen, ebenfalls legen wir einen fixen Abstand zwischen den Balken von 10 Pixeln fest:
+```javascript
+var abstand = 10;
+var balken_breite = width / 6 - abstand;
+```
+
+Die Zahl 6 steht hier für die sechs KandidatInnen, die das Diagramm letzten Endes darstellen soll. Da wir Prozentangaben verwenden, können wir die Höhe direkt als Maximalhöhe verwenden - jeder Balken soll demnach X Prozent dieser Maximalhöhe einnehmen:
+```javascript
+var max_hoehe = height;
+```
+
+Fügen wir diese Code-Schnipsel in unser bisheriges Script ein, dann passen sich die Balken an den verfügbaren Platz an. Verändert man die Fenstergröße und lädt die Seite neu, dann hat sich die Balkengröße entsprechend verändert (über diesen Weg lassen sich später responsive Visualisierungen umsetzen). Zu beachten: Wir dividieren die Werte jeweils durch 100, um den Prozentwert zu erhalten.
+```javascript
+svg.append("rect")
+  .attr("x", 0)
+  .attr("y", max-hoehe - max_hoehe * 18.94 / 100)
+  .attr("width", balken_breite)
+  .attr("height", max_hoehe * 18.94 / 100)
+  .style("fill", "purple");
+
+svg.append("rect")
+  .attr("x", balken_breite + abstand)
+  .attr("y", max-hoehe - max_hoehe * 35.05 / 100)
+  .attr("width", balken_breite)
+  .attr("height", max_hoehe * 35.05 / 100)
+  .style("fill", "blue");
+  
+svg.append("rect")
+  .attr("x", balken_breite * 2 + abstand * 2)
+  .attr("y", max_hoehe - max_hoehe * 11.28 / 100)
+  .attr("width", balken_breite)
+  .attr("height", max_hoehe * 11.28 / 100)
+  .style("fill", "red");
+```
+
+###Automatisierung
+Bisher haben wir, trotz einiger Berechnungen, die Balken praktisch von Hand gezeichnet. Wir haben drei Blöcke für drei Säulen geschrieben, die großteils identisch sind und sich nur durch die Werte unterscheiden. Höchste Zeit also, Arbeit an den Computer zu übergeben.
+Um das zu tun, müssen wir unsere Ergebnisse zuerst in einem anderen Variablen-Typ speichern, einem so genannten _array_. Das ist im Grunde nichts anderen als eine Liste von Werten und sieht so aus:
+```javascript
+var ergebnis = [18.94, 35.05, 11.28, 11.12, 2.26, 21.34];
+```
+
+Die Werte stehen zwischen `[]` und sind alphabetisch geordnet (nun alle sechs KandidatInnen). Arrays können nicht nur Zahlen, sondern beliebige Inhalte speichern, das wird später noch wichtig. 
+
+Ein großer Vorteil von arrays ist, dass man direkt den Wert an Position x ansprechen kann, und zwar so: `ergebnis[2]`
+
+Gibt man das in die Console ein, dann erhält man den Wert an Position zwei, konkret 11.28. Achtung: Arrays nummerieren ihren Inhalt immer beginnend mit 0, nicht mit 1. 
+
+Um jetzt den array gut nutzen zu können, brauchen wir noch eine andere Technik, eine so genannte for-Schleife oder for-loop (siehe [hier](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Statements/for). Damit sagt man dem Programm, dass es einen Block Code hintereinander mehrmals ausführen soll. Angewandt auf unser Programm sieht das so aus:
+```javascript
+var ergebnis = [18.94, 35.05, 11.28, 11.12, 2.26, 21.34];
+var farben = ["purple", "blue", "red", "black", "yellow", "green"];
+
+for (var i = 0; i < ergebnis.length; i++)
+  {
+  svg.append("rect")
+    .attr("x", balken_breite * i + abstand * i)
+    .attr("y", max_hoehe - max_hoehe * ergebnis[i] / 100)
+    .attr("width", balken_breite)
+    .attr("height", max_hoehe * ergebnis[i] / 100)
+    .style("fill", farben[i]);
+  }
+```
+Hier passiert Folgendes: Wir definieren zunächst den array mit den Ergebnissen, und auch einen zweiten array mit Farben für die KandidatInnen. Die Farben sind gleich geordnet wie die Ergebnisse. Dann beginnt die for-Schleife: Wir legen zunächst eine Zählvariable `i` an und setzen sie auf 0 (die Anfangsposition im array). Dann müssen wir der Schleife sagen, wie lange sie laufen soll - hier so lange, so lange ihr Wert kleiner als die Länge des Ergebnis-arrays ist, sprich bis alle Werte abgearbeitet sind. 
+
+Schließlich muss man noch definieren, was mit der Zählvariablen in jedem Durchgang passieren soll: Wir wollen den array Wert für Wert durcharbeiten, also erhöhen wir `i` um eins, dafür steht `i++` (alternativ könnte man schreiben: `i = i + 1`). Anschließend öffnet man eine geschwungene Klammer und ergänzt den Code, der wiederholt werden soll - und schließt die geschwungene Klammer wieder.
+
+Der Code ist wiederum identisch mit den vorherigen Beispielen, wir ersetzen nur die zuvor statischen Werte durch variable Angaben: `balkenbreite * i` multipliziert die Variable balkenbreite mit dem Wert der Zählvariablen, um jeden Balken weiter nach rechts zu rücken. Beim ersten Durchlauf ist `i` 0, x ist also insgesamt auch 0, beim zweiten 1, x also 60 usw.
+
+Bei `y` ersetzen wir den fixen Wert durch den Wert im array ergebnis, der an Stelle `i` steht, das gleiche machen wir bei der Höhe. Abschließend holen wir uns noch die Farbe aus dem Farben-array, wiederum über die Position.
+![Screenshot Balken 3](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_3.jpg) 
+
+Mit der Schleife haben wir den Code erheblich verkürzt. Zusätzlich brauchen wir nur die Werte im array ändern, um andere Ergebnisse abzubilden, unser Diagramm passt sich automatisch an die Zahl der Werte an. Um das zu perfektionieren, müssen wir noch die Berechnung der Balkenbreite anpassen:
+```javascript
+var balken_breite = width / ergebnis.length - abstand;
+```
+
+Achtung, diese Definition muss im Code unterhalb des Ergebnis-arrays stehen, da Javascript sonst eine Variable sucht, die noch nicht definiert ist. Jetzt wäre es Zeit, ein wenig zu experimentieren, also die Werte zu ändern, weitere einzugeben oder vorhandene zu löschen und zu testen, was dann passiert. Auch die Farben kann man ändern, es gibt sehr viel schönere Farben als die archetypischen rot/blau/grün-Töne, z.B. [hier](http://tristen.ca/hcl-picker/#/hlc/6/1/15534C/E2E062)
+
+
+###Objekte
+Das Schöne (oder Schreckliche) am Programmieren ist, dass man praktisch immer Sachen verbessern oder ausbauen kann. Wir haben zwar schon einiges erreicht, aber ein paar Sachen sind noch unbefriedigend. So sind die Balken etwa nicht nach Größe sortiert, was bei einer Ergebnis-Visualisierung aber sinnvoll wäre. Das kann man händisch machen, muss dann aber auch die Farben händisch anpassen. Es wäre also gut, wenn wir das Ergebnis und die dazugehörige Farbe verbinden könnten.
+
+Das lässt sich in Javascript über ein [object](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object) erreichen. Sehr vereinfacht ist das ein, naja, Objekt mit beliebigen Eigenschaften, z.B.:
+```javascript
+var mensch = {"name": "Sepp", "alter":17, "hobby":"Daten visualisieren"};
+```
+
+Auf diese Weise haben wir object `mensch` definiert. Dieses object hat den Namen "Sepp" und das Alter 17. Man kann alle einzelnen Eigenschaften ansprechen, indem man object.eigenschaft schreibt - oder konkret `console.log(mensch.name, mensch.alter, mensch.hobby);`.
+
+Ein object besteht immer aus einem oder mehreren key/value-Paaren, die durch , voneinander getrennt sind: Unter Anführungszeichen steht zunächst ein key, hier eben z.B. `"name"`, dann folgt ein `:` und dann der value `"Sepp"`. Anders als ein array stehen die Inhalte eines objects zwischen `{}`.
+
+Zu beachten: Keys brauchen immer Anführungszeichen, Werte je nach ihrem Typ. Strings, also Texte, brauchen Anführungszeichen, Zahlen aber nicht. Man kann auch Variable als value in einem object speichern, arrays, Formeln, Funktionen, weitere objects usw.
+
+Für unser Beispiel brauchen wir also ein object, dass das Ergebnis und die Farbe des/der KandidatIn enthält - und weils leicht geht, nehmen wir den Namen auch noch mit und schreiben die Variable ergebnis um:
+```javascript
+var ergebnis = {"name":"Griss", "wert":18.94, "farbe":"#91678A"};
+```
+
+Wir brauchen insgesamt sechs solcher objects als Liste, um sie anschließend in unsere Schleife schicken zu können: Also stellen wir einen array zusammen, der diese objects enthält:
+```javascript
+var ergebnis = [
+	{"name":"Griss", "wert":18.94, "farbe":"#91678A"},
+	{"name":"Hofer", "wert":35.05, "farbe":"#356F7F"},
+	{"name":"Hundstorfer", "wert":11.28, "farbe":"#B7615A"},
+	{"name":"Khol", "wert":11.12, "farbe":"#000000"},
+	{"name":"Lugner", "wert":2.26, "farbe":"#E2E062"},
+	{"name":"Van der Bellen", "wert":21.34, "farbe":"#437C4F"},
+	];
+```
+
+Dann passen wir noch den Code in der for-Schleife an - da unser array jetzt keine einfachen Zahlen mehr enthält, sondern eben mehrere objects, müssen wir einfach die jeweils notwendige Eigenschaft abrufen:
+
+```javascript
+svg.append("rect")
+  .attr("x", balken_breite * i + abstand * i)
+  .attr("y", max_hoehe - max_hoehe * ergebnis[i].wert / 100)
+  .attr("width", balken_breite)
+  .attr("height", max_hoehe * ergebnis[i].wert / 100)
+  .style("fill", ergebnis[i].farbe);
+```
+
+Weiterhin wird die Balkenbreite und die Zahl der Balken automatisch berechnet, wenn man Einträge löscht oder ergänzt, dann verändert sich die Darstellung. Bei den Farben verwenden wir hier übrigens testweise den Hex-Wert, da uns das mehr Möglichkeiten gibt.
+
+Zurück zu dem, warum wir eigentlich ein object gebraucht haben: Wir wollen die Balken nach Größe sortieren. Auch das lässt sich sehr einfach mit Javascript lösen, wir tragen nach dem object (und vor der Schleife) folgenden Code ein:
+```javascript
+ergebnis.sort(function(a, b) { return a.wert < b.wert; });
+```
+
+Dieser Code geht durch den array und vergleicht immer zwei Werte - a und b - und sortiert sie entsprechend um. Das `<` führt zu einer absteigenden Sortierung - was `>` macht sollte man ausprobieren. Wichtig ist auch hier: Wir können nicht direkt die Werte im array abrufen, sondern wir rufen jeweils einen Eintrag im array auf, und dann die entsprechende Eigenschaft. So weit, so gut:
+
+![Screenshot Balken 4](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_4.jpg) 

@@ -1,12 +1,12 @@
 #Balkendiagramm mit Javascript
 
-Das folgende Tutorial versucht eine Schritt-für-Schritt-Einführung in die Visualisierung von Wahlergebnissen mittels Javascript/d3.js zu geben. Es ist keine Einführung ins Programmieren an sich oder in Javascript.
+Das folgende Tutorial versucht eine Schritt-für-Schritt-Einführung in die Visualisierung von Wahlergebnissen mittels Javascript/d3.js zu geben. Ziel ist, ein [Balkendiagramm](http://bl.ocks.org/ginseng666/1b950542b04bdf91d55a846b633bb77b) zu erstellen.
 
 
 ###Voraussetzungen
 
 * eine grobe Vorstellung, wie eine HTML-Seite aussieht
-* eine grobe Vorstellung, was eine Variable in Javascript ist, wie man sie definiert und was man damit macht (link Folien Peter?)
+* eine grobe Vorstellung, was eine Variable in Javascript ist und was man damit macht (link Folien Peter?)
 
 Eine Einführung in HTML findet sich z.B. [hier](http://de.html.net/tutorials/html/) oder [hier](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Introduction), Tutorials zu Javascript gibt es z.B. [hier](https://wiki.selfhtml.org/wiki/JavaScript/Tutorials/Einf%C3%BChrung) oder [hier](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide).
 

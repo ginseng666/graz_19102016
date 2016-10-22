@@ -106,7 +106,7 @@ projection.scale(s).center([(box[0][0]+box[1][0])/2,(box[0][1]+box[1][1])/2]).tr
 
 Auch dieser Teil mag zunächst überfordernd wirken, im Kern berechnet man aber nur die maximal mögliche Vergrößerung der Karte angesichts ihrer Abmessungen und des verfügbaren Platzes (Ausgangspunkt für `scale` ist immer 1). Dann sagt man der Projektion, wie stark sie die Karte vergrößern/verkleinern soll, zentriert sie horizontal und vertikal und verschiebt die Darstellung noch in die Mitte des Bildschirms.
 
-Nach diesen eher komplexen Vorarbeiten ist die Darstellung der Karte vergleichsweise simpel. Wir verwenden dazu das `path`-Element bei SVGs, laden die Karte mit `data(map.features)` und zeichnen für jeden Eintrag in diesem Array - für jede Gemeinde - die Grenzen in schwarz (`stroke`). Die Flächen bleiben leer (`fill`). Einmal mehr der Hinweis: Wenn man sich Variable in der Console anschaut, dann hilft das, die Abläufe zu verstehen.
+Nach diesen eher komplexen Vorarbeiten ist die Darstellung der Karte vergleichsweise simpel. Wir verwenden dazu das [path](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths)-Element, laden die Karte mit `data(map.features)` und zeichnen für jeden Eintrag in diesem Array - für jede Gemeinde - die Grenzen in schwarz (`stroke`). Die Flächen bleiben leer (`fill`). Einmal mehr der Hinweis: Wenn man sich Variable in der Console anschaut, dann hilft das, die Abläufe zu verstehen.
 
 Hier der komplette Block, vom Laden der Datei bis zur Darstellung:
 
@@ -130,4 +130,59 @@ d3.json("gemeinden.json", function(grenzen)
   });
 ```
 
+Wie angesprochen steht der gesamte Code innerhalb der `{}` des `d3.json`, damit er erst ausgeführt wird, wenn die Datei fertig geladen wurde.
+
 ![Screenshot Karte 1](https://github.com/ginseng666/graz_19102016/blob/master/img/karte_1.jpg)
+
+
+###Ergebnis-csv laden und bearbeiten
+Damit ist die erste Hälfte des Projekts abgeschlossen, wir haben eine Karte. Jetzt fehlen nur noch die Ergebnisse. Anders als beim Balken-Diagramm haben wir nicht sechs Werte, sondern sechs Werte für alle Gemeinden in Österreich. Daraus händisch eine Variable zu schaffen sollte auf der ToDo-Liste nicht ganz oben stehen.
+
+Wir müssen das auch nicht machen, wir können die [Ergebnis-Datei](http://www.bmi.gv.at/cms/BMI_wahlen/bundespraes/bpw_2016/FILES/Endgueltiges_Gesamtergebnis_BPW16_1WG.xlsx) des BMI verwenden. Das ist eine xlsx-Datei, die alle relevanten Felder enthält. 
+
+![Screenshot Beispiel BMI](https://github.com/ginseng666/graz_19102016/blob/master/img/beispiel_bmi.jpg)
+
+Bevor wir sie zu einer csv-Datei weiterverarbeiten entwirren wir die verbundenen Zellen in den ersten beiden Zeilen, beschriften die Spalten und löschen die Prozenteinträge.
+
+![Screenshot Beispiel BMI2](https://github.com/ginseng666/graz_19102016/blob/master/img/beispiel_bmi2.jpg)
+
+Jetzt können wir die Datei speichern. Um aus dem deutschen Excel eine gut verwendbare csv-Datei zu bekommen, muss man ein paar Umwege gehen:
+
+* Zuerst stellen wir das Zahlenformat in allen Zellen so um, dass keine Tausender-Trennzeichen verwendet werden
+* Dann speichern wir die die Excel-Datei mit "Speichern als" als "Unicode Text"
+* Diese Datei öffnen wir mit einem Text-Editor
+* Mittels Suchen/Ersetzen alle "," durch "." ersetzen (ersetzt alle Komma-Zeichen)
+* Das Trennzeichen zwischen den Spalten - wahrscheinlich Tabulator - kopieren wir und via Suchen/Ersetzen ersetzen wir es mit einem ","
+* Die Datei speichern
+* Die Dateiendung auf ".csv" ändern
+
+
+Nach dieser Tour de force ist das Laden der Datei in Javascript simpel:
+
+```javascript
+d3.csv("gemeindeergebnisse.csv", function(ergebnisse)
+  {
+  console.log(ergebnisse);
+  });
+```
+
+In der Console sehen wir nun einen Array von Objects, der für jede Zeile im Excel einen Eintrag enthält. Vom Aufbau her ist er identisch mit der Ergebnis-Variablen im Balken-Diagramm-Beispiel. Was uns auch auffällt: Alle Zahlen stehen unter "". Das ist ein Nachteil des Arbeitens mit CSV, alle Werte werden standardmäßig als String geladen.
+
+Damit wir mit den Zahlen weiterarbeiten können, müssen wir sie wieder in Zahlen umwandeln. Dafür verwenden wir zwei Schleifen:
+```javascript
+d3.csv("gemeindeergebnisse.csv", function(ergebnisse)
+  {
+  for (var i = 0; i < ergebnisse.length; i++)
+    {
+    for (var x in ergebnisse[i])
+      {
+      if (x != "GKZ" && x != "Gebietsname") ergebnisse[i][x] = +ergebnisse[i][x];
+      }
+    }
+  console.log(ergebnisse);
+});
+```
+
+Die erste for-Schleife kennen wir schon, wir durchlaufen einfach jeden Eintrag im Array. Jeder Eintrag wird dann einer zweiten Schleife unterworfen: Mit `for (var x in ergebnisse[i])` durchlaufen wir alle Eigenschaften des Objects `ergebnisse[i]`. Der Name der jeweiligen Eigenschaft wird in der Variablen `x` gespeichert.
+
+Dann folgt ein Ausschlussverfahren: Die Eigenschaften `GKZ` und `Gebietsname` sind Strings, müssen also nicht geändert werden. Alle anderen Eigenschaften werden aber in eine Zahl umgewandelt - das passiert schlicht mit dem `+`-Zeichen.

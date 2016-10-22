@@ -1,13 +1,16 @@
 #Balkendiagramm mit Javascript
 
-Das folgende Tutorial versucht eine Schritt-für-Schritt-Einführung in die Visualisierung von Wahlergebnissen mittels Javascript/d3js zu geben.
+Das folgende Tutorial versucht eine Schritt-für-Schritt-Einführung in die Visualisierung von Wahlergebnissen mittels Javascript/d3.js zu geben. Es ist keine Einführung ins Programmieren an sich oder in Javascript.
+
 
 ###Voraussetzungen
 
 * eine grobe Vorstellung, wie eine HTML-Seite aussieht
-* eine ungefähre Vorstellung von Javascript (link Folien Peter?)
+* eine grobe Vorstellung, was eine Variable ist, wie man sie definiert und was man damit macht (link Folien Peter?)
 
 Vorab kann man auch einen Blick in dieses Tutorial werfen, das einige grundlegende Punkte zum Thema Visualisierung von Wahldaten anschneidet: [Tutorial offenewahlen.at](https://github.com/ginseng666/offenewahlen/blob/gh-pages/visualisierungen.md)
+
+Das Tutorial verwendet die Version 3 von d3.js, das mittlerweile bei Version 4 steht. Für die hier vorgestellten Techniken macht das keinen Unterschied, für weiterführende Visualisierungen gibt es allerdings zahlreiche [Änderungen](https://github.com/d3/d3/blob/master/CHANGES.md#scales-d3-scale).
 
 
 ###Nützliches
@@ -24,6 +27,7 @@ Ebenfalls nützlich ist der Inspector (Firefox)/Elements (Chrome)/Dom Inspector 
 
 ![Screenshot Inspector](https://github.com/ginseng666/graz_19102016/blob/master/img/inspector.jpg) 
 (Inspector in Firefox 49)
+
 
 ###Das Grundgerüst
 
@@ -245,7 +249,7 @@ svg.append("rect")
 ![Screenshot Balken 2](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_2.jpg) 
 
 
-###Variable Größe
+###variable Größe
 Nachdem wir schon die Größe des SVG variabel gemacht haben, liegt es nahe, dasselbe für die Größe des Diagramms zu machen. So können wir die Balkenbreite aus der verfügbaren Breite berechnen, ebenfalls legen wir einen fixen Abstand zwischen den Balken von 10 Pixeln fest:
 ```javascript
 var abstand = 10;
@@ -321,7 +325,12 @@ Mit der Schleife haben wir den Code erheblich verkürzt. Zusätzlich brauchen wi
 var balken_breite = width / ergebnis.length - abstand;
 ```
 
-Achtung, diese Definition muss im Code unterhalb des Ergebnis-arrays stehen, da Javascript sonst eine Variable sucht, die noch nicht definiert ist. Jetzt wäre es Zeit, ein wenig zu experimentieren, also die Werte zu ändern, weitere einzugeben oder vorhandene zu löschen und zu testen, was dann passiert. Auch die Farben kann man ändern, es gibt sehr viel schönere Farben als die archetypischen rot/blau/grün-Töne, z.B. [hier](http://tristen.ca/hcl-picker/#/hlc/6/1/15534C/E2E062).
+Achtung, diese Definition muss im Code unterhalb des Ergebnis-arrays stehen, da Javascript sonst eine Variable sucht, die noch nicht definiert ist. Jetzt wäre es Zeit, ein wenig zu experimentieren, also die Werte zu ändern, weitere einzugeben oder vorhandene zu löschen und zu testen, was dann passiert. Auch die Farben kann man ändern, es gibt sehr viel schönere Farben als die archetypischen rot/blau/grün-Töne, z.B. [hier](http://tristen.ca/hcl-picker/#/hlc/6/1/15534C/E2E062). Man kann auch probieren, was passiert, wenn man die Zeile `.style("fill", farben[i]);` durch folgende drei Zeilen ersetzt:
+```javascript
+    .style("fill", "none")
+    .style("stroke", farben[i])
+    .style("stroke-width", "5px");
+```
 
 
 ###Objekte
@@ -379,9 +388,9 @@ Dieser Code geht durch den array, vergleicht zwei Werte - a und b - und sortiert
 
 
 ###Daten mit d3.js abbilden...
-Nachdem wir soweit gekommen sind, können wir uns kurz den Möglichkeiten von [d3.js](http://www.d3js.org) widmen. Diese library ist explizit dafür gedacht, Daten zu visualisieren und bietet sehr viel mehr als die bisher genutzten Befehle. Besonders zu betonen ist die Eigenschaft, Daten mit erzeugten Elementen zu verbinden. Auf diesem Weg ist es z.B. möglich, Darstellungen dynamisch zu ändern, ohne alle Inhalte löschen und neu zeichnen zu müssen - die [Umsortierung der Balken der Wahlmotive](http://strategieanalysen.at/wahlen/bp2016/) basiert etwa darauf.
+Nachdem wir soweit gekommen sind, können wir uns kurz den Möglichkeiten von [d3.js](http://www.d3js.org) widmen. Diese library ist explizit dafür gedacht, Daten zu visualisieren und bietet sehr viel mehr als die bisher genutzten Befehle. Besonders praktisch ist, Daten mit erzeugten Elementen zu verbinden. Auf diesem Weg ist es z.B. möglich, Darstellungen dynamisch zu ändern, ohne alle Inhalte löschen und neu zeichnen zu müssen - die [Umsortierung der Balken der Wahlmotive](http://strategieanalysen.at/wahlen/bp2016/) basiert etwa darauf. Für eine kurze Einführung sollte man die [Introduction](https://d3js.org/) lesen.
 
-Um das zu nutzen müssen wir ein paar Kleinigkeiten ändern. Unser object bleibt gleich, wir löschen aber unsere gesamte for-Schleife und schreiben stattdessen:
+Um die Technik zu nutzen müssen wir ein paar Kleinigkeiten ändern. Unser object bleibt gleich, wir löschen aber unsere gesamte for-Schleife und schreiben stattdessen:
 ```javascript
 svg.selectAll("rect")
   .data(ergebnis)
@@ -391,12 +400,12 @@ svg.selectAll("rect")
   .attr("y", function(d) { return max_hoehe - max_hoehe * d.wert / 100; })
   .attr("width", balken_breite)
   .attr("height", function(d) { return max_hoehe * d.wert / 100; })
-  .style("fill", function(d) { return d.farbe);
+  .style("fill", function(d) { return d.farbe; })
 ```
 
 Das führt zu folgendem Ablauf: Mit `selectAll` schauen wir, ob schon Rechtecke vorhanden sind und wählen diese allenfalls aus. Dann laden wir mit `data(ergebnis)` unseren array, mit `enter()` werden die Daten dann quasi ausgerollt. Im Hintergrund wird eine Art der for-Schleife ausgeführt und für jeden Eintrag im array ein Rechteck erzeugt. Wenn schon Rechtecke vorhanden waren, dann werden zuerst diese mit den neuen Daten überschrieben. Merke: `data()` benötigt immer einen array.
 
-Bei der Festlegung der Attribute verwenden wir jetzt folgenden Code: `function(d, i) { }`. Das `d` steht für den jeweiligen Eintrag (gleichbedeutend mit dem `ergebnis[i]` von oben), `i` ist wieder eine Zählvariable. In dieser Logik werden alle Eigenschaften abgerufen und ausgegeben.
+Bei der Festlegung der Attribute verwenden wir jetzt folgenden Code: `function(d, i) { }`. Das `d` steht für den jeweiligen Eintrag (gleichbedeutend mit dem `ergebnis[i]` von oben), `i` ist wieder eine Zählvariable. In dieser Logik werden alle Eigenschaften abgerufen und ausgegeben. Achtung: `d` kann immer ohne `i` stehen, `i` aber nie ohne `d`.
 
 
 ###...und was das bringt
@@ -410,7 +419,7 @@ svg.selectAll("rect")
   .attr("y", function(d) { return max_hoehe - max_hoehe * d.wert / 100; })
   .attr("width", balken_breite)
   .attr("height", function(d) { return max_hoehe * d.wert / 100; })
-  .style("fill", function(d) { return d.farbe)
+  .style("fill", function(d) { return d.farbe; })
   .on("mouseover", function(d, i) {
      svg.append("text")
        .attr("x", balken_breite * i + abstand * i)
@@ -419,3 +428,179 @@ svg.selectAll("rect")
        .text(d.wert);
      });
 ```
+
+Der Ausdruck `.on(mouseover` bedeutet genau das, was er sagt - nämlich, dass etwas passieren soll, wenn der Mauszeiger über das Element fährt. In unserem Fall erzeugen wir nach dem bereits bekannten Muster einen Text. Ein Text in SVG benötigt nur zwei Attribute, nämlich
+* x - die Anfangsposition horizontal
+* y - die Anfangspoition vertikal
+
+Nachdem wir den Text beim Balken erscheinen lassen wollen, können wir zur Positionierung die gleichen Formeln verwenden wie für den Balken selbst. Der Text erhält noch eine Farbe, bevor schließlich mit `.text(d.wert)` der eigentliche Inhalt geschrieben wird.
+
+Praktisch ist nun eben, dass wir den Wert nicht erst aus unserem array heraussuchen und zum passenden Balken zuordnen müssen. Wir können  stattdessen die Daten mit dem Ausdruck `function(d, i)` abrufen, wobei `d` wieder für den jeweiligen Eintrag im array steht, und `i` die Zählvariable ist. 
+
+Ein kurzer Test sollte zeigen, dass der `mouseover`-Effekt funktioniert (hoffentlich), das Ergebnis aber noch unbefriedigend ist. Erstens ist die Position des Textes am Anfang des Balkens unpassend, zweitens kann man nur einmal über den Balken fahren, da der Text dann permanent angezeigt wird.
+
+Also feilen wir zunächst am Aussehen des Textes. Um ihn über dem Balken zu zentrieren, müssen wir zur x-Position die halbe Balkenbreite addieren. Hat man das gemacht, dass sieht das Ergebnis etwas besser aus:
+```javascript
+svg.append("text")
+  .attr("x", balken_breite * i + abstand * i + balken_breite / 2)
+  .attr("y", max_hoehe - max_hoehe * d.wert / 100)
+  .style("fill", d.farbe)
+  .text(d.wert);
+```
+
+Das Ergebnis sieht etwas besser aus, allerdings ist der Text leicht nach rechts verschoben. Das liegt daran, dass wir mit `x` die Anfangsposition definieren, also den Punkt, an dem der Text beginnt. Wir möchten aber, dass dieser Punkt in der Mitte des Textes liegt, was mit der Eigenschaft [`text-anchor`](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/text-anchor) erreicht werden kann:
+```javascript
+  .style("text-anchor", "middle")
+```
+
+Wenn wir schon dabei sind, dann machen wir den Text noch etwas größer und lassen einen kleinen Abstand zum Balken selbst:
+```javascript
+  .attr("y", max_hoehe - max_hoehe * d.wert / 100 - 5)
+  
+  .style("font-size", "36px")
+```
+
+Zu beachten: Da das Koordinatensystem oben links beginnt, müssen wir ein paar Pixel abziehen, um den Text nach oben zu schieben.
+
+Um den `mouseover`-Effekt zu komplettieren, müssen wir abschließend nur mehr festlegen, was mit dem Text passieren soll, sobald die Maus den Balken wieder verlässt. In unserem Fall soll der Text gelöscht werden.
+```javascript
+svg.selectAll("rect")
+  .data(ergebnis)
+  .enter()
+  .append("rect")
+  .attr("x", function(d, i) { return balken_breite * i + abstand * i; })
+  .attr("y", function(d) { return max_hoehe - max_hoehe * d.wert / 100; })
+  .attr("width", balken_breite)
+  .attr("height", function(d) { return max_hoehe * d.wert / 100; })
+  .style("fill", function(d) { return d.farbe; })
+  .on("mouseover", function(d, i) {
+     svg.append("text")
+       .attr("x", balken_breite * i + abstand * i + balken_breite / 2)
+       .attr("y", max_hoehe - max_hoehe * d.wert / 100 - 5)
+       .style("fill", d.farbe)
+       .style("text-anchor", "middle")
+       .style("font-size", "36px")
+       .text(d.wert);
+     })
+   .on("mouseout", function() {
+     svg.selectAll("text").remove();
+   });
+```
+
+Mit `mouseout` rufen wir analog zu `mouseover` wieder eine Funktion auf. Diese benötigt diesmal werden `d` noch `i`, sie wählt einfach alle Text-Elemente auf dem SVG an und entfernt sie mittels `remove()`. Das `selectAll` ist dabei konsequent: Sollten noch andere Textteile irgendwo am SVG stehen, dann werden auch diese gelöscht.
+
+![Screenshot Balken 5](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_5.jpg) 
+
+
+###Animation
+Als letzten Punkt in diesem Tutorial basteln wir noch eine Einstiegsanimation, die die Balken wachsen lässt. Dazu kann man sich zunächst theoretisch überlegen, was passieren soll, damit es diesen Effekt gibt: Als Ausgangspunkt bräuchten wir einen Balken, der die Höhe `0` hat, als Endpunkt dann den Balken mit der Höhe `d.wert`. Das können wir probieren (der `mouseover`-Effekt ist zur Übersichtlichkeit gelöscht):
+```javascript
+svg.selectAll("rect")
+  .data(ergebnis)
+  .enter()
+  .append("rect")
+  .attr("x", function(d, i) { return balken_breite * i + abstand * i; })
+  .attr("y", function(d) { return max_hoehe - max_hoehe * d.wert / 100; })
+  .attr("width", balken_breite)
+  .attr("height", 0)
+  .style("fill", function(d) { return d.farbe; });  
+```
+
+Dieser Code führt zu einem leeren Bildschirm, da alle Balken die Höhe `0` haben. Im Inspector sollten sie aber sichtbar sein. Nach dem Ausgangspunkt brauchen wir den Endpunkt, den wir mit folgendem Code erzeugen:
+```javascript
+svg.selectAll("rect")  
+  .attr("height", function(d) { return max_hoehe * d.wert / 100; }); 
+```
+
+Das Ergebnis sieht gleich aus wie zuvor, der Weg dorthin war aber etwas anders: Wir haben zuerst die Balken wie schon bekannt gezeichnet, allerdings ohne Höhe. Dann haben wir mit `svg.selectAll("rect")` nochmals alle Balken ausgewählt und nur ihre Höhe geändert. Dass dabei jeder Balken die richtige Höhe erhält, ist den Daten zu verdanken, die wir mit `data()` daran gebunden haben.
+
+Was jetzt noch fehlt ist die Animation, die wir mit zwei kurzen Zeilen erzeugen:
+```javascript
+svg.selectAll("rect")
+  .transition()
+  .duration(1000)
+  .attr("height", function(d) { return max_hoehe * d.wert / 100; }); 
+```
+
+`transition()` sagt dem Programm, dass es einen Übergang zwischen zwei Positionen erzeugen soll - bei uns zwischen Höhe `0` und Höhe `d.wert`. Der Ausdruck `duration(1000)` legt in Millisekunden fest, auf welchen Zeitraum dieser Prozess aufgeteilt werden soll. 1000 Millisekunden entsprechen 1 Sekunde.
+
+Soweit sich keine Tipp- oder sonstigen Fehler eingeschlichen haben sollten die Balken erscheinen - allerdings in einer verdrehten Version, sie fließen von oben nach unten. Programmatisch ist das richtig, wenn wir uns erinnern, dass wir die Balken - aufgrund des Koordinatensystems - genau so gezeichnet haben: Die y-Position ist das obere Ende, von dem aus wir den Balken in der Höhe des Werts nach unten zeichnen.
+
+Passend sieht es trotzdem nicht aus, also drehen wir den Spieß um. Neben der Höhe verändern wir jetzt auch `y`. Ausgangspunkt ist nun der Fuß des Balkens (`max_hoehe`), von dem aus wir `y` nach oben verschieben, während wir gleichzeitig die Höhe von `0` auf `d.wert` setzen:
+```javascript
+svg.selectAll("rect")
+  .data(ergebnis)
+  .enter()
+  .append("rect")
+  .attr("x", function(d, i) { return balken_breite * i + abstand * i; })
+  .attr("y", function(d) { return max_hoehe; })
+  .attr("width", balken_breite)
+  .attr("height", 0)
+  .style("fill", function(d) { return d.farbe; });  
+   
+svg.selectAll("rect")
+  .transition()
+  .duration(1000)
+  .attr("y", function(d) { return max_hoehe - max_hoehe * d.wert / 100; })
+  .attr("height", function(d) { return max_hoehe * d.wert / 100; }); 
+```
+
+Damit sollte nun alles wie gewünscht funktionieren und der Weg zum ausprobieren und experimentieren ist frei. Eine Kleinigkeit ergänzen wir aber dennoch, und zwar geben wir der `transition()` mit dem Befehl `delay(function(d, i) { return 250 * i; })` eine Staffelung beim Zeichnen der Balken mit. Was dabei passiert, sollte mittlerweile nachvollziehbar sein: `delay()` an sich verzögert die Ausführung einer `transition()` um x Millisekunden. Indem wir wieder die Zählvariable `i` dazunehmen, verzögert sich jeder Balken um 250 Millisekunden länger. Hier nun der finale Code:
+```javascript
+<script>
+var ergebnis = [
+  {"name":"Griss", "wert":18.94, "farbe":"#91678A"},
+  {"name":"Hofer", "wert":35.05, "farbe":"#356F7F"},
+  {"name":"Hundstorfer", "wert":11.28, "farbe":"#B7615A"},
+  {"name":"Khol", "wert":11.12, "farbe":"#000000"},
+  {"name":"Lugner", "wert":2.26, "farbe":"#E2E062"},
+  {"name":"Van der Bellen", "wert":21.34, "farbe":"#437C4F"},
+  ];
+
+ergebnis.sort(function(a, b) { return a.wert < b.wert; });
+
+var width = window.innerWidth * 0.95;
+var height = window.innerHeight * 0.95;
+
+var abstand = 10;
+var balken_breite = width / ergebnis.length - abstand;
+var max_hoehe = height;
+
+var svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
+
+svg.selectAll("rect")
+  .data(ergebnis)
+  .enter()
+  .append("rect")
+  .attr("x", function(d, i) { return balken_breite * i + abstand * i; })
+  .attr("y", function(d) { return max_hoehe; })
+  .attr("width", balken_breite)
+  .attr("height", 0)
+  .style("fill", function(d) { return d.farbe; })
+  .on("mouseover", function(d, i) {
+     svg.append("text")
+       .attr("x", balken_breite * i + abstand * i + balken_breite / 2)
+       .attr("y", max_hoehe - max_hoehe * d.wert / 100 - 5)
+       .style("fill", d.farbe)
+       .style("text-anchor", "middle")
+       .style("font-size", "36px")
+       .text(d.wert);
+     })
+  .on("mouseout", function() {
+     svg.selectAll("text").remove();
+   });
+   
+svg.selectAll("rect")
+  .transition()
+  .delay(function(d, i) { return 250 * i; })
+  .duration(1000)
+  .attr("y", function(d) { return max_hoehe - max_hoehe * d.wert / 100; })
+  .attr("height", function(d) { return max_hoehe * d.wert / 100; }); 
+
+</script>
+```
+
+
+Als nächste Schritte kann man sich die unzähligen Beispiele auf [d3js.org](http://www.d3js.org) ansehen, vor allem jene zu den basic charts wie [bar chart](http://bl.ocks.org/mbostock/3885304), [line chart](http://bl.ocks.org/mbostock/3883245) oder auch [stacked bars](http://bl.ocks.org/mbostock/3886208). 
+
+Die nächste logische Stufe in d3.js selber ist die Verwendung von [Skalen](https://www.dashingd3js.com/d3js-scales), um Daten besser ins Optische übertragen zu können.

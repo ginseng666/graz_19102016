@@ -6,7 +6,9 @@ Das folgende Tutorial versucht eine Schritt-für-Schritt-Einführung in die Visu
 ###Voraussetzungen
 
 * eine grobe Vorstellung, wie eine HTML-Seite aussieht
-* eine grobe Vorstellung, was eine Variable ist, wie man sie definiert und was man damit macht (link Folien Peter?)
+* eine grobe Vorstellung, was eine Variable in Javascript ist, wie man sie definiert und was man damit macht (link Folien Peter?)
+
+Eine Einführung in HTML findet sich z.B. [hier](http://de.html.net/tutorials/html/) oder [hier](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Introduction), Tutorials zu Javascript gibt es z.B. [hier](https://wiki.selfhtml.org/wiki/JavaScript/Tutorials/Einf%C3%BChrung) oder [hier](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide).
 
 Vorab kann man auch einen Blick in dieses Tutorial werfen, das einige grundlegende Punkte zum Thema Visualisierung von Wahldaten anschneidet: [Tutorial offenewahlen.at](https://github.com/ginseng666/offenewahlen/blob/gh-pages/visualisierungen.md)
 
@@ -27,6 +29,11 @@ Ebenfalls nützlich ist der Inspector (Firefox)/Elements (Chrome)/Dom Inspector 
 
 ![Screenshot Inspector](https://github.com/ginseng666/graz_19102016/blob/master/img/inspector.jpg) 
 (Inspector in Firefox 49)
+
+
+Konkret zu d3.js und Balkendiagrammen gibt es sehr gute Einführungen:
+* [Let's make a bar chart](https://bost.ocks.org/mike/bar/)
+* [Making a bar chart](http://alignedleft.com/tutorials/d3/making-a-bar-chart)
 
 
 ###Das Grundgerüst
@@ -221,7 +228,7 @@ Damit die Balken nebeneinander stehen, verschieben wir sie jeweils um die Breite
 ![Screenshot Balken 1](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_1.jpg) 
 
 
-Das geht schon in die richtige Richtung, intuitiv würde man aber Balken von unten nach oben erwarten. Die Grafik steht auf dem Kopf, da - wie oben geschrieben - das Koordinatensystem oben links beginnt. Nachdem man keine negative Höhe zeichnen kann, müssen wir umdenken: Wir setzen die y-Koordinate (bezeichnet die linke obere Ecke) dorthin, wo die Säule aufhören soll, basierend auf einer gemeinsamen Grundlinie bei 100. Die Höhe bleibt gleich, dafür geben wir jedem Element eine eigene Farbe (für Farbnamen siehe [hier](https://en.wikipedia.org/wiki/Web_colors):
+Das geht schon in die richtige Richtung, intuitiv würde man aber Balken von unten nach oben erwarten. Die Grafik steht auf dem Kopf, da - wie oben geschrieben - das Koordinatensystem oben links beginnt. Nachdem man keine negative Höhe zeichnen kann, müssen wir umdenken: Wir setzen die y-Koordinate (bezeichnet die linke obere Ecke) dorthin, wo die Säule aufhören soll, basierend auf einer gemeinsamen Grundlinie bei 100. Die Höhe bleibt gleich, dafür geben wir jedem Element eine eigene Farbe (für Farbnamen siehe [hier](https://en.wikipedia.org/wiki/Web_colors)):
 
 ```javascript
 svg.append("rect")
@@ -439,7 +446,7 @@ Praktisch ist nun eben, dass wir den Wert nicht erst aus unserem array heraussuc
 
 Ein kurzer Test sollte zeigen, dass der `mouseover`-Effekt funktioniert (hoffentlich), das Ergebnis aber noch unbefriedigend ist. Erstens ist die Position des Textes am Anfang des Balkens unpassend, zweitens kann man nur einmal über den Balken fahren, da der Text dann permanent angezeigt wird.
 
-Also feilen wir zunächst am Aussehen des Textes. Um ihn über dem Balken zu zentrieren, müssen wir zur x-Position die halbe Balkenbreite addieren. Hat man das gemacht, dass sieht das Ergebnis etwas besser aus:
+Feilen wir zunächst am Aussehen des Textes. Um ihn über dem Balken zu zentrieren, müssen wir zur x-Position die halbe Balkenbreite addieren. Hat man das gemacht, dass sieht das Ergebnis etwas besser aus:
 ```javascript
 svg.append("text")
   .attr("x", balken_breite * i + abstand * i + balken_breite / 2)
@@ -460,7 +467,7 @@ Wenn wir schon dabei sind, dann machen wir den Text noch etwas größer und lass
   .style("font-size", "36px")
 ```
 
-Zu beachten: Da das Koordinatensystem oben links beginnt, müssen wir ein paar Pixel abziehen, um den Text nach oben zu schieben.
+Da das Koordinatensystem oben links beginnt, müssen wir ein paar Pixel abziehen, um den Text nach oben zu schieben.
 
 Um den `mouseover`-Effekt zu komplettieren, müssen wir abschließend nur mehr festlegen, was mit dem Text passieren soll, sobald die Maus den Balken wieder verlässt. In unserem Fall soll der Text gelöscht werden.
 ```javascript
@@ -487,7 +494,7 @@ svg.selectAll("rect")
    });
 ```
 
-Mit `mouseout` rufen wir analog zu `mouseover` wieder eine Funktion auf. Diese benötigt diesmal werden `d` noch `i`, sie wählt einfach alle Text-Elemente auf dem SVG an und entfernt sie mittels `remove()`. Das `selectAll` ist dabei konsequent: Sollten noch andere Textteile irgendwo am SVG stehen, dann werden auch diese gelöscht.
+Mit `mouseout` rufen wir analog zu `mouseover` wieder eine Funktion auf. Diese benötigt diesmal werden `d` noch `i`, sie wählt einfach alle Text-Elemente auf dem SVG an und entfernt sie mittels `remove()`. Das `selectAll` ist dabei konsequent: Sollten noch andere Textteile irgendwo im SVG stehen, dann werden auch diese gelöscht.
 
 ![Screenshot Balken 5](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_5.jpg) 
 
@@ -533,7 +540,7 @@ svg.selectAll("rect")
   .enter()
   .append("rect")
   .attr("x", function(d, i) { return balken_breite * i + abstand * i; })
-  .attr("y", function(d) { return max_hoehe; })
+  .attr("y", max_hoehe)
   .attr("width", balken_breite)
   .attr("height", 0)
   .style("fill", function(d) { return d.farbe; });  
@@ -545,7 +552,7 @@ svg.selectAll("rect")
   .attr("height", function(d) { return max_hoehe * d.wert / 100; }); 
 ```
 
-Damit sollte nun alles wie gewünscht funktionieren und der Weg zum ausprobieren und experimentieren ist frei. Eine Kleinigkeit ergänzen wir aber dennoch, und zwar geben wir der `transition()` mit dem Befehl `delay(function(d, i) { return 250 * i; })` eine Staffelung beim Zeichnen der Balken mit. Was dabei passiert, sollte mittlerweile nachvollziehbar sein: `delay()` an sich verzögert die Ausführung einer `transition()` um x Millisekunden. Indem wir wieder die Zählvariable `i` dazunehmen, verzögert sich jeder Balken um 250 Millisekunden länger. Hier nun der finale Code:
+Damit sollte nun alles wie gewünscht funktionieren und der Weg zum Ausprobieren und Experimentieren ist frei. Eine Kleinigkeit ergänzen wir aber dennoch, und zwar geben wir der `transition()` mit dem Befehl `delay(function(d, i) { return 250 * i; })` eine Staffelung beim Zeichnen der Balken mit. Was dabei passiert, sollte mittlerweile nachvollziehbar sein: `delay()` an sich verzögert die Ausführung einer `transition()` um x Millisekunden. Indem wir wieder die Zählvariable `i` dazunehmen, verzögert sich jeder Balken um 250 Millisekunden länger. Hier nun der finale Code:
 ```javascript
 <script>
 var ergebnis = [
@@ -573,7 +580,7 @@ svg.selectAll("rect")
   .enter()
   .append("rect")
   .attr("x", function(d, i) { return balken_breite * i + abstand * i; })
-  .attr("y", function(d) { return max_hoehe; })
+  .attr("y", max_hoehe)
   .attr("width", balken_breite)
   .attr("height", 0)
   .style("fill", function(d) { return d.farbe; })

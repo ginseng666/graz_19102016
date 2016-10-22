@@ -12,8 +12,6 @@ Eine Einführung in HTML findet sich z.B. [hier](http://de.html.net/tutorials/ht
 
 Vorab kann man auch einen Blick in dieses Tutorial werfen, das einige grundlegende Punkte zum Thema Visualisierung von Wahldaten anschneidet: [Tutorial offenewahlen.at](https://github.com/ginseng666/offenewahlen/blob/gh-pages/visualisierungen.md)
 
-Das Tutorial verwendet die Version 3 von d3.js, das mittlerweile bei Version 4 steht. Für die hier vorgestellten Techniken macht das keinen Unterschied, für weiterführende Visualisierungen gibt es allerdings zahlreiche [Änderungen](https://github.com/d3/d3/blob/master/CHANGES.md#scales-d3-scale).
-
 
 ###Nützliches
 Der Code kann in jedem Textprogramm geschrieben werden, ein etwas besserer Texteditor hat aber viele Vorteile, wie etwa die Nummerierung der Zeilen. Zwei sehr gute (freie) Programme:
@@ -30,10 +28,12 @@ Ebenfalls nützlich ist der Inspector (Firefox)/Elements (Chrome)/Dom Inspector 
 ![Screenshot Inspector](https://github.com/ginseng666/graz_19102016/blob/master/img/inspector.jpg) 
 (Inspector in Firefox 49)
 
-
 Konkret zu d3.js und Balkendiagrammen gibt es sehr gute Einführungen:
 * [Let's make a bar chart](https://bost.ocks.org/mike/bar/)
 * [Making a bar chart](http://alignedleft.com/tutorials/d3/making-a-bar-chart)
+
+
+d3.js steht mittlerweile bei Version 4, zahlreiche Beispiele und Umsetzungen im Internet verwenden aber noch Version 3. Für die hier vorgestellten Techniken ergeben sich keine Unterschiede, darüber hinaus gibt es aber zahlreiche [Veränderungen](https://github.com/d3/d3/blob/master/CHANGES.md)
 
 
 ###Das Grundgerüst
@@ -43,7 +43,7 @@ Konkret zu d3.js und Balkendiagrammen gibt es sehr gute Einführungen:
 <head>
 <title>ein Balkendiagramm</title>
 <meta charset="utf-8">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
 <body>
 
@@ -102,7 +102,7 @@ Wir löschen das SVG-Beispiel wieder und wenden uns Javascript zu. Als erstes ei
 <head>
 <title>ein Balkendiagramm</title>
 <meta charset="utf-8">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js" charset="utf-8"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
 <body>
 

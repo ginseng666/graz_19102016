@@ -142,20 +142,21 @@ Wir müssen das auch nicht machen, wir können die [Ergebnis-Datei](http://www.b
 
 ![Screenshot Beispiel BMI](https://github.com/ginseng666/graz_19102016/blob/master/img/beispiel_bmi.jpg)
 
-Bevor wir sie zu einer csv-Datei weiterverarbeiten entwirren wir die verbundenen Zellen in den ersten beiden Zeilen, beschriften die Spalten und löschen die Prozenteinträge.
+Bevor wir sie zu einer csv-Datei weiterverarbeiten entwirren wir die verbundenen Zellen in den ersten beiden Zeilen, beschriften die Spalten und löschen die Prozenteinträge. Ebenso entfernen wir alle Tausender-Trennzeichen.
 
 ![Screenshot Beispiel BMI2](https://github.com/ginseng666/graz_19102016/blob/master/img/beispiel_bmi2.jpg)
 
 Jetzt können wir die Datei speichern. Um aus dem deutschen Excel eine gut verwendbare csv-Datei zu bekommen, muss man ein paar Umwege gehen:
 
-* Zuerst stellen wir das Zahlenformat in allen Zellen so um, dass keine Tausender-Trennzeichen verwendet werden
-* Dann speichern wir die die Excel-Datei mit "Speichern als" als "Unicode Text"
+* Wir speichern die Excel-Datei mit "Speichern als" als "Unicode Text"
 * Diese Datei öffnen wir mit einem Text-Editor
 * Mittels Suchen/Ersetzen alle "," durch "." ersetzen (ersetzt alle Komma-Zeichen)
 * Das Trennzeichen zwischen den Spalten - wahrscheinlich Tabulator - kopieren wir und via Suchen/Ersetzen ersetzen wir es mit einem ","
 * Die Datei speichern
 * Die Dateiendung auf ".csv" ändern
 
+
+Eine fertige Datei kann [hier](gemeindeergebnisse.csv) heruntergeladen werden.
 
 Nach dieser Tour de force ist das Laden der Datei in Javascript simpel:
 
@@ -186,3 +187,7 @@ d3.csv("gemeindeergebnisse.csv", function(ergebnisse)
 Die erste for-Schleife kennen wir schon, wir durchlaufen einfach jeden Eintrag im Array. Jeder Eintrag wird dann einer zweiten Schleife unterworfen: Mit `for (var x in ergebnisse[i])` durchlaufen wir alle Eigenschaften des Objects `ergebnisse[i]`. Der Name der jeweiligen Eigenschaft wird in der Variablen `x` gespeichert.
 
 Dann folgt ein Ausschlussverfahren: Die Eigenschaften `GKZ` und `Gebietsname` sind Strings, müssen also nicht geändert werden. Alle anderen Eigenschaften werden aber in eine Zahl umgewandelt - das passiert schlicht mit dem `+`-Zeichen.
+
+
+###Karte und Ergebnis verknüpfen
+Soweit gerüstet geht es nun nur mehr darum, die Karte und die Ergebnisse zu verknüpfen. Dafür brauchen wir einen Wert, der in beiden Datensätzen enthalten ist, und das ist die Gemeindekennziffer.

@@ -1,12 +1,12 @@
 #Balkendiagramm mit Javascript
 
-Das folgende Tutorial versucht eine Schritt-für-Schritt-Einführung in die Visualisierung von Wahlergebnissen mittels Javascript/d3.js zu geben. Ziel ist, ein [Balkendiagramm](http://bl.ocks.org/ginseng666/1b950542b04bdf91d55a846b633bb77b) zu erstellen.
+Das folgende Tutorial versucht eine Schritt-für-Schritt-Einführung in die Visualisierung von Wahlergebnissen mittels Javascript/d3.js zu geben. Ziel ist, ein [Balkendiagramm](http://bl.ocks.org/ginseng666/1b950542b04bdf91d55a846b633bb77b) zu erstellen. 
 
 
 ###Voraussetzungen
 
 * eine grobe Vorstellung, wie eine HTML-Seite aussieht
-* eine grobe Vorstellung, was eine Variable in Javascript ist und was man damit macht (link Folien Peter?)
+* eine grobe Vorstellung, was eine Variable in Javascript ist und was man damit macht (**link Folien Peter?**)
 
 Eine Einführung in HTML findet sich z.B. [hier](http://de.html.net/tutorials/html/) oder [hier](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Introduction), Tutorials zu Javascript gibt es z.B. [hier](https://wiki.selfhtml.org/wiki/JavaScript/Tutorials/Einf%C3%BChrung) oder [hier](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide).
 
@@ -20,20 +20,24 @@ Der Code kann in jedem Textprogramm geschrieben werden, ein etwas besserer Texte
 
 Wenn man Code schreibt, passieren zwangsläufig jede Menge Fehler, vom Tippfehler bis zur vergessenen Klammer. Damit man diese Fehler auch sehen kann, sollte man beim Testen die Javascript-Console im Browser offen haben. Mit F12 öffnet man in verschiedenen Browsern mehrere Entwicklungstools, unter denen sich auch die Console befindet.
 
-![Screenshot Console](https://github.com/ginseng666/graz_19102016/blob/master/img/console.jpg) 
+![Screenshot Console](https://github.com/ginseng666/graz_19102016/blob/master/img/console.jpg)
+
 (Console in Firefox 49)
+
 
 Ebenfalls nützlich ist der Inspector (Firefox)/Elements (Chrome)/Dom Inspector (Explorer): Er zeigt den gesamten Inhalt der Seite an. Wenn man also ein Element darstellen will, es aber nicht erscheint und auch kein Fehler in der Console ausgegeben wird, dann kann man es hier suchen (und findet vermutlich den Grund, warum es nicht dargestellt wird - etwa fehlende geschlossene `<>` oder fehlerhafte Koordinaten).
 
 ![Screenshot Inspector](https://github.com/ginseng666/graz_19102016/blob/master/img/inspector.jpg) 
+
 (Inspector in Firefox 49)
+
 
 Konkret zu d3.js und Balkendiagrammen gibt es sehr gute Einführungen:
 * [Let's make a bar chart](https://bost.ocks.org/mike/bar/)
 * [Making a bar chart](http://alignedleft.com/tutorials/d3/making-a-bar-chart)
 
 
-d3.js steht mittlerweile bei Version 4, zahlreiche Beispiele und Umsetzungen im Internet verwenden aber noch Version 3. Für die hier vorgestellten Techniken ergeben sich keine Unterschiede, darüber hinaus gibt es aber zahlreiche [Veränderungen](https://github.com/d3/d3/blob/master/CHANGES.md)
+d3.js steht mittlerweile bei Version 4, zahlreiche Beispiele und Umsetzungen im Internet verwenden aber noch Version 3. Für die hier vorgestellten Techniken ergeben sich keine Unterschiede, darüber hinaus gibt es aber zahlreiche [Veränderungen](https://github.com/d3/d3/blob/master/CHANGES.md).
 
 
 ###Das Grundgerüst
@@ -54,7 +58,7 @@ d3.js steht mittlerweile bei Version 4, zahlreiche Beispiele und Umsetzungen im 
 </html>
 ```
 
-Dieser Code umreißt die Struktur der Seite: Neben dem `<html>`-Tag am Anfang steht im `<head>` ein Titel und der Zeichensatz wird angegeben (`<meta charset="utf-8">` - siehe [hier](https://developer.mozilla.org/de/docs/Web/HTML/Element/meta#attr-charset)). Danach wird die d3.js-library eingebunden, damit später die entsprechenden Befehle verfügbar sind. Das `</head>`-Tag wird geschlossen, der `<body>` beginnt und enthält noch einen leeren `<script>`-Block. Hier wird der Javascript-Code eingefügt. Anschließend werden der `</body>` und das `</html>` wieder geschlossen.
+Dieser Code umreißt die Struktur der Seite: Neben dem `<html>`-Tag am Anfang steht im `<head>` ein Titel und der Zeichensatz wird angegeben (`<meta charset="utf-8">` - siehe [hier](https://developer.mozilla.org/de/docs/Web/HTML/Element/meta#attr-charset)). Danach wird die d3.js-library eingebunden, damit später die entsprechenden Befehle verfügbar sind. Das `</head>`-Tag wird geschlossen, der `<body>` beginnt und enthält noch einen leeren `<script>`-Block. Hier wird der Javascript-Code eingefügt. Anschließend werden `</body>` und `</html>` wieder geschlossen.
 
 Diesen Teil kann man standardmäßig als Ausgangsbasis für eine Seite verwenden.
 
@@ -122,7 +126,7 @@ Wenn wir nun die Console (mit F12) öffnen, dann sollte dort das Wort "Funktioni
 Hilfreich können auch die Zahlenangaben rechts sein: Sie stehen für die Zeile und die Spalte, in der der Befehl steht, der die Ausgabe erzeugt. Ein Klick darauf zeigt den Code an.
 
 
-Als nächstes beginnen direkt die Vorbereitungen für die Grafik. Wie oben gezeigt brauchen wir zunächst ein SVG, um darauf zeichnen zu können, und dieses SVG braucht eine Breite und eine Höhe. Diese Werte kann man statisch setzen (auf z.B. 400 Pixel). Wenn es allerdings keinen Grund gibt, warum das SVG genau 400 Pixel breit sein soll, dann vergibt man damit aber viel Flexibilität. Besser ist es, die Werte nach dem verfügbaren Platz festzulegen:
+Als nächstes die Vorbereitungen für die Grafik: Wie oben gezeigt brauchen wir zunächst ein SVG, um darauf zeichnen zu können, und dieses SVG braucht eine Breite und eine Höhe. Diese Werte kann man statisch setzen (auf z.B. 400 Pixel). Wenn es allerdings keinen Grund gibt, warum das SVG genau 400 Pixel breit sein soll, dann vergibt man damit viel Flexibilität. Besser ist es, die Werte nach dem verfügbaren Platz festzulegen:
 ```javascript
 <script>
 var width = window.innerWidth;
@@ -144,18 +148,18 @@ var svg = d3.select("body").append("svg").attr("width", width).attr("height", he
 </script>
 ```
 
-Zunächst müssen wir festlegen, wo das SVG angehängt werden soll. Dafür nutzen wir den Befehl `d3.select`, der in d3.js zur Verfügung steht. Wir wählen damit den `<body>` aus und hängen mit `append` ein SVG an. Diesem geben wir die Breite `width` und die Höhe `height`. (_In umfangreicheren Projekten werden SVGs z.B. in ein `div` gezeichnet, da man sie damit einfach positionieren kann._)
+Zunächst müssen wir festlegen, wo das SVG angehängt werden soll. Dafür nutzen wir den Befehl `d3.select`. Wir wählen damit den `<body>` aus und hängen mit `append` ein SVG an. Diesem geben wir die Breite `width` und die Höhe `height`. In umfangreicheren Projekten werden SVGs z.B. in ein `div` gezeichnet, da man sie damit etwa positionieren kann.
 
 Wir speichern das SVG gleich in der Variablen `svg`, um danach einfacher darauf zugreifen zu können. Alternativ könnte man es später auch so aufrufen: `d3.select("body").select("svg")`
 
-Der Inspector im Browser sollte das SVG-Element bereits anzeigen. Am Bildschirm sieht man (noch) nichts).
+Der Inspector im Browser sollte das SVG-Element bereits anzeigen. Am Bildschirm sieht man (noch) nichts.
 
 ![Screenshot Inspector SVG](https://github.com/ginseng666/graz_19102016/blob/master/img/inspector_svg.jpg) 
 
 
-Dieser Schritt zeigt gut, wie die Befehle in d3.js aufgebaut sind: 
+Dieser Schritt zeigt, wie die Befehle in d3.js aufgebaut sind: 
 * man wählt ein Element aus
-* anschließendund hängt man alle Beschreibungen und Befehle an das Element an
+* anschließendund hängt man alle Beschreibungen und Befehle an, die auf das Element angewandt werden sollen
 * diese Angaben werden mit einem . verbunden
 
 Das kann in einer Zeile passieren, aber auch untereinander geschrieben werden, letzteres ist meistens übersichtlicher.
@@ -183,16 +187,16 @@ Die Angaben sehen etwas anders aus als oben, entsprechen ihnen aber:
 * width und height bestimmen Breite und Höhe
 * fill bestimmt die Farbe
 
-Hier wird eine weitere Unterscheidung sichtbar: In d3.js verwendet man `.attr` zur Festlegung von Attributen wie Position und Form, `.style` für die Festlegung der Art und Weise, wie das Element aussehen soll (_teilweise funktionieren die Befehle mit der einen und der anderen Bezeichnung gleichermaßen, man sollte aber konsequent versuchen, den Style vom Rest zu trennen_).
+Hier wird eine weitere Unterscheidung sichtbar: In d3.js verwendet man `.attr` zur Festlegung von Attributen wie Position und Form, `.style` für die Festlegung der Art und Weise, wie das Element aussehen soll (teilweise funktionieren die Befehle mit der einen und der anderen Bezeichnung gleichermaßen, man sollte aber konsequent versuchen, den Style vom Rest zu trennen).
 
 
 An dieser Stelle: Am meisten lernt man, wenn man Sachen einfach ausprobiert - also einfach einmal die Werte beim Rechteck verändern und schauen, was passiert, und die Console und den Inspector verwenden. Welchen Effekt hat es, wenn das Rechteck größer als das SVG ist? Was ist, wenn man es außerhalb positioniert?
 
 
 ###ein erstes Balkendiagramm
-Nach diesen Grundlagen jetzt (endlich) zum Balkendiagramm. Zum Testen verwenden wir das Ergebnis des ersten Wahlgangs der Bundespräsidentenwahl 2016 von [hier](http://www.bmi.gv.at/cms/BMI_wahlen/bundespraes/bpw_2016/Ergebnis.aspx). Ein Balkendiagramm besteht banal aus mehreren Rechtecken nebeneinander, die entweder die Breite oder die Höhe dafür verwenden, Werte anzuzeigen. Das jeweils andere Attribut ist konstant.
+Nach diesen Grundlagen jetzt (endlich) zum Balkendiagramm. Zum Testen verwenden wir das Ergebnis des ersten Wahlgangs der Bundespräsidentenwahl 2016 vom [BMI](http://www.bmi.gv.at/cms/BMI_wahlen/bundespraes/bpw_2016/Ergebnis.aspx). Ein Balkendiagramm besteht banal aus mehreren Rechtecken, die entweder die Breite oder die Höhe dafür verwenden, Werte anzuzeigen. Das jeweils andere Attribut ist konstant.
 
-Wir versuchen ein Säulendiagramm, verwenden also die Höhe, um einen Wert auszudrücken, als Balkenbreite 50 Pixel. Also zeichnen wir testweise je ein Rechteck für die drei ersten KandidatInnen (alphabetisch sind das Irmgard Griss, Norbert Hofer und Rudolf Hundstorfer):
+Wir machen ein Säulendiagramm, verwenden also die Höhe, um einen Wert auszudrücken. Als Balkenbreite nehmen wir 50 Pixel und zeichnen testweise je ein Rechteck für die drei ersten KandidatInnen (alphabetisch sind das Irmgard Griss, Norbert Hofer und Rudolf Hundstorfer):
 ```javascript
 <script>
 var width = window.innerWidth * 0.95;
@@ -293,17 +297,18 @@ svg.append("rect")
 ```
 
 ###Automatisierung
-Bisher haben wir, trotz einiger Berechnungen, die Balken praktisch von Hand gezeichnet. Wir haben drei Blöcke für drei Säulen geschrieben, die großteils identisch sind und sich nur durch die Werte unterscheiden. Höchste Zeit also, Arbeit an den Computer zu übergeben.
-Um das zu tun, müssen wir unsere Ergebnisse zuerst in einem anderen Variablen-Typ speichern, einem so genannten _array_. Das ist im Grunde nichts anderen als eine Liste von Werten und sieht so aus:
+Bisher haben wir, trotz einiger Berechnungen, die Balken praktisch von Hand gezeichnet. Wir haben drei Blöcke für drei Säulen, die großteils identisch sind und sich nur durch die Werte unterscheiden. Höchste Zeit also, Arbeit an den Computer zu übergeben.
+
+Um das zu tun, müssen wir unsere Ergebnisse zuerst in einem anderen Variablen-Typ speichern, einem so genannten _Array_. Das ist im Grunde nichts anderen als eine Liste von Werten und sieht so aus:
 ```javascript
 var ergebnis = [18.94, 35.05, 11.28, 11.12, 2.26, 21.34];
 ```
 
-Die Werte stehen zwischen `[]` (nun alle sechs KandidatInnen). Arrays können nicht nur Zahlen, sondern beliebige Inhalte speichern, das wird später noch wichtig. Ein großer Vorteil von arrays ist, dass man direkt den Wert an Position x ansprechen kann, und zwar so: `ergebnis[2]`
+Die Werte stehen zwischen `[]` (nun alle sechs KandidatInnen). Arrays können nicht nur Zahlen, sondern beliebige Inhalte speichern, das wird später noch wichtig. Ein großer Vorteil von Arrays ist, dass man direkt den Wert an Position x ansprechen kann, und zwar so: `ergebnis[2]`
 
 Gibt man das in die Console ein, dann erhält man den Wert an Position zwei, konkret 11.28. Achtung: Arrays nummerieren ihren Inhalt immer beginnend mit 0, nicht mit 1. 
 
-Um jetzt den array gut nutzen zu können, brauchen wir noch eine andere Technik, eine so genannte for-Schleife oder for-loop (siehe [hier](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Statements/for)). Damit sagt man dem Programm, dass es einen Block Code hintereinander mehrmals ausführen soll. Angewandt auf unser Programm sieht das so aus:
+Um den Array gut nutzen zu können, brauchen wir noch eine so genannte for-Schleife oder for-loop (siehe [hier](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Statements/for)). Damit sagt man dem Programm, dass es einen Block Code hintereinander mehrmals ausführen soll. Angewandt auf unser Programm sieht das so aus:
 ```javascript
 var ergebnis = [18.94, 35.05, 11.28, 11.12, 2.26, 21.34];
 var farben = ["purple", "blue", "red", "black", "yellow", "green"];
@@ -318,21 +323,25 @@ for (var i = 0; i < ergebnis.length; i++)
     .style("fill", farben[i]);
   }
 ```
-Hier passiert Folgendes: Wir definieren zunächst den array mit den Ergebnissen, und auch einen zweiten array mit Farben für die KandidatInnen. Die Farben sind gleich geordnet wie die Ergebnisse. Dann beginnt die for-Schleife: Wir legen zunächst eine Zählvariable `i` an und setzen sie auf 0 (die Anfangsposition im array). Dann müssen wir der Schleife sagen, wie lange sie laufen soll - hier so lange, so lange ihr Wert kleiner als die Länge des Ergebnis-arrays ist, sprich bis alle Werte abgearbeitet sind. 
+Hier passiert Folgendes: Wir definieren zunächst den Array mit den Ergebnissen, und auch einen zweiten Array mit Farben für die KandidatInnen. Die Farben sind gleich geordnet wie die Ergebnisse. Dann beginnt die for-Schleife: Wir legen zunächst eine Zählvariable `i` an und setzen sie auf 0 (die Anfangsposition im Array). Dann müssen wir der Schleife sagen, wie lange sie laufen soll - so lange, so lange ihr Wert kleiner als die Länge des Ergebnis-Arrays ist, sprich bis alle Werte abgearbeitet sind. 
 
-Schließlich muss man noch definieren, was mit der Zählvariablen in jedem Durchgang passieren soll: Wir wollen den array Wert für Wert durcharbeiten, also erhöhen wir `i` um eins, dafür steht `i++` (alternativ könnte man schreiben: `i = i + 1`). Anschließend öffnet man eine geschwungene Klammer und ergänzt den Code, der wiederholt werden soll - und schließt die geschwungene Klammer wieder.
+Schließlich muss man noch definieren, was mit der Zählvariablen in jedem Durchgang passieren soll: Wir wollen den Array Wert für Wert durcharbeiten, also erhöhen wir `i` um eins, dafür steht `i++` (alternativ könnte man schreiben: `i = i + 1`). Anschließend öffnet man eine geschwungene Klammer und ergänzt den Code, der wiederholt werden soll - und schließt die geschwungene Klammer wieder.
 
 Der Code ist wiederum identisch mit den vorherigen Beispielen, wir ersetzen nur die zuvor statischen Werte durch variable Angaben: `balkenbreite * i` multipliziert die Variable balken_breite mit dem Wert der Zählvariablen, um jeden Balken weiter nach rechts zu rücken. Beim ersten Durchlauf ist `i` 0, x ist also insgesamt auch 0, beim zweiten 1, x also 60 usw.
 
-Bei `y` ersetzen wir den fixen Wert durch den Wert im array, der an Stelle `i` steht, das gleiche machen wir bei der Höhe. Abschließend holen wir uns noch die Farbe aus dem Farben-array, wiederum über die Position.
+Bei `y` ersetzen wir den fixen Wert durch den Wert im Array, der an Stelle `i` steht, das gleiche machen wir bei der Höhe. Abschließend holen wir uns noch die Farbe aus dem Farben-Array, wiederum über die Position.
+
 ![Screenshot Balken 3](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_3.jpg) 
 
-Mit der Schleife haben wir den Code erheblich verkürzt. Zusätzlich brauchen wir nur die Werte im array ändern, um andere Ergebnisse abzubilden, unser Diagramm passt sich automatisch an die Zahl der Werte an. Um das zu perfektionieren, müssen wir noch die Berechnung der Balkenbreite anpassen:
+
+Mit der Schleife haben wir den Code erheblich verkürzt. Zusätzlich brauchen wir nur die Werte im Array ändern, um andere Ergebnisse abzubilden, unser Diagramm passt sich automatisch an die Zahl der Werte an. Um das zu perfektionieren passen wir noch die Berechnung der Balkenbreite an:
 ```javascript
 var balken_breite = width / ergebnis.length - abstand;
 ```
 
-Achtung, diese Definition muss im Code unterhalb des Ergebnis-arrays stehen, da Javascript sonst eine Variable sucht, die noch nicht definiert ist. Jetzt wäre es Zeit, ein wenig zu experimentieren, also die Werte zu ändern, weitere einzugeben oder vorhandene zu löschen und zu testen, was dann passiert. Auch die Farben kann man ändern, es gibt sehr viel schönere Farben als die archetypischen rot/blau/grün-Töne, z.B. [hier](http://tristen.ca/hcl-picker/#/hlc/6/1/15534C/E2E062). Man kann auch probieren, was passiert, wenn man die Zeile `.style("fill", farben[i]);` durch folgende drei Zeilen ersetzt:
+Achtung, diese Definition muss im Code unterhalb des Ergebnis-Arrays stehen, da Javascript sonst eine Variable sucht, die noch nicht definiert ist. Jetzt wäre es Zeit, ein wenig zu experimentieren, die Werte zu ändern, weitere einzugeben oder vorhandene zu löschen und zu testen, was dann passiert. Auch die Farben kann man ändern, es gibt sehr viel schönere Farben als die archetypischen rot/blau/grün-Töne, z.B. [hier](http://tristen.ca/hcl-picker/#/hlc/6/1/15534C/E2E062). 
+
+Man kann auch probieren, was passiert, wenn man die Zeile `.style("fill", farben[i]);` durch folgende drei Zeilen ersetzt:
 ```javascript
     .style("fill", "none")
     .style("stroke", farben[i])
@@ -340,26 +349,26 @@ Achtung, diese Definition muss im Code unterhalb des Ergebnis-arrays stehen, da 
 ```
 
 
-###Objekte
+###Objects
 Das Schöne (oder Schreckliche) am Programmieren ist, dass man praktisch immer Sachen verbessern oder ausbauen kann. Wir haben zwar schon einiges erreicht, aber ein paar Sachen sind noch unbefriedigend. So sind die Balken etwa nicht nach Größe sortiert, was bei einer Ergebnis-Visualisierung aber sinnvoll wäre. Das kann man händisch machen, muss dann aber auch die Farben händisch anpassen. Es wäre also gut, wenn wir das Ergebnis und die dazugehörige Farbe verbinden könnten.
 
-Das lässt sich in Javascript über ein [object](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object) erreichen. Sehr vereinfacht ist das ein, naja, Objekt mit beliebigen Eigenschaften, z.B.:
+Das lässt sich in Javascript über ein [Object](https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Object) erreichen. Sehr vereinfacht ist das ein, naja, Objekt mit beliebigen Eigenschaften, z.B.:
 ```javascript
 var mensch = {"name": "Sepp", "alter":17, "hobby":"Daten visualisieren"};
 ```
 
-Auf diese Weise haben wir ein object `mensch` definiert. Dieses object hat den Namen "Sepp" und das Alter 17. Man kann alle einzelnen Eigenschaften ansprechen, indem man object.eigenschaft schreibt - oder konkret `mensch.name`, `mensch.alter` oder `mensch.hobby`. Auch das kann man testweise in die Console eingeben.
+Auf diese Weise haben wir ein Object `mensch` definiert. Dieses Object hat den Namen "Sepp" und das Alter 17. Man kann alle einzelnen Eigenschaften ansprechen, indem man Object.Eigenschaft schreibt - oder konkret `mensch.name`, `mensch.alter` oder `mensch.hobby`. Auch das kann man testweise in die Console eingeben.
 
-Ein object besteht immer aus einem oder mehreren key/value-Paaren, die durch Beistrich voneinander getrennt sind: Unter Anführungszeichen steht zunächst ein key, hier eben z.B. `"name"`, dann folgt ein `:` und dann der value `"Sepp"`. Anders als ein array stehen die Inhalte eines objects zwischen `{}`.
+Ein Object besteht immer aus einem oder mehreren key/value-Paaren, die durch Beistrich voneinander getrennt sind: Unter Anführungszeichen steht zunächst ein key, hier eben z.B. `"name"`, dann folgt ein `:` und dann der value `"Sepp"`. Anders als ein array stehen die Inhalte eines objects zwischen `{}`.
 
-Zu beachten: Keys brauchen immer Anführungszeichen, Werte je nach ihrem Typ. Strings, also Texte, stehen unter Anführungszeichen, Zahlen aber nicht. Man kann auch Variable in einem object speichern, arrays, Formeln, Funktionen, weitere objects usw.
+Zu beachten: Keys brauchen immer Anführungszeichen, Werte je nach ihrem Typ. Strings, also Texte, stehen unter Anführungszeichen, Zahlen aber nicht. Man kann auch Variable in einem Object speichern, Arrays, Formeln, Funktionen, weitere Objects usw.
 
-Für unser Beispiel brauchen wir ein object, dass das Ergebnis und die Farbe des/der KandidatIn enthält - und weils leicht geht, nehmen wir den Namen auch noch mit und schreiben die Variable ergebnis um:
+Für unser Beispiel brauchen wir ein Object, dass das Ergebnis und die Farbe des/der KandidatIn enthält - und weils leicht geht, nehmen wir den Namen auch noch mit und schreiben die Variable ergebnis um:
 ```javascript
 var ergebnis = {"name":"Griss", "wert":18.94, "farbe":"#91678A"};
 ```
 
-Wir benötigen insgesamt sechs solcher objects als Liste, um sie anschließend in unsere Schleife schicken zu können: Also stellen wir einen array zusammen, der diese objects enthält:
+Wir benötigen insgesamt sechs solcher Objects als Liste, um sie anschließend in unsere Schleife schicken zu können: Also stellen wir einen Array zusammen, der diese Objects enthält:
 ```javascript
 var ergebnis = [
   {"name":"Griss", "wert":18.94, "farbe":"#91678A"},
@@ -367,11 +376,11 @@ var ergebnis = [
   {"name":"Hundstorfer", "wert":11.28, "farbe":"#B7615A"},
   {"name":"Khol", "wert":11.12, "farbe":"#000000"},
   {"name":"Lugner", "wert":2.26, "farbe":"#E2E062"},
-  {"name":"Van der Bellen", "wert":21.34, "farbe":"#437C4F"},
+  {"name":"Van der Bellen", "wert":21.34, "farbe":"#437C4F"}
   ];
 ```
 
-Dann passen wir noch den Code in der for-Schleife an - da unser array jetzt keine einfachen Zahlen mehr enthält, sondern eben mehrere objects, müssen wir einfach die jeweils benötigte Eigenschaft abrufen:
+Dann passen wir den Code in der for-Schleife an - da unser Array jetzt keine einfachen Zahlen mehr enthält, sondern eben mehrere Objects, müssen wir die jeweils benötigte Eigenschaft abrufen:
 
 ```javascript
 svg.append("rect")
@@ -382,22 +391,22 @@ svg.append("rect")
   .style("fill", ergebnis[i].farbe);
 ```
 
-Weiterhin wird die Balkenbreite und die Zahl der Balken automatisch berechnet, wenn man Einträge löscht oder ergänzt verändert sich die Darstellung. Bei den Farben verwenden wir hier übrigens testweise den [Hex-Wert](http://www.w3schools.com/html/html_colors.asp).
+Weiterhin wird die Balkenbreite und die Zahl der Balken automatisch berechnet, wenn man Einträge löscht oder ergänzt verändert sich die Darstellung. Bei den Farben verwenden wir testweise den [Hex-Wert](http://www.w3schools.com/html/html_colors.asp).
 
-Zurück zu dem, warum wir überhaupt ein object gebraucht haben: Wir wollen die Balken nach Größe sortieren. Das lässt sich einfach mit Javascript lösen, wir tragen nach dem object (und vor der Schleife) folgenden Code ein:
+Zurück zu dem, warum wir überhaupt ein Object gebraucht haben: Wir wollen die Balken nach Größe sortieren. Das lässt sich einfach mit Javascript lösen, wir tragen nach dem Object (und vor der Schleife) folgenden Code ein:
 ```javascript
 ergebnis.sort(function(a, b) { return a.wert < b.wert; });
 ```
 
-Dieser Code geht durch den array, vergleicht zwei Werte - a und b - und sortiert sie entsprechend um. Das `<` führt zu einer absteigenden Sortierung - was `>` macht sollte man ausprobieren. Wichtig: Wir können nicht direkt die Werte im array abrufen, sondern wir rufen jeweils einen Eintrag im array auf, und dann die entsprechende Eigenschaft. So weit, so gut:
+Dieser Code geht durch den Array, vergleicht zwei Werte - a und b - und sortiert sie entsprechend um. Das `<` führt zu einer absteigenden Sortierung - was `>` macht sollte man ausprobieren. Wichtig: Wir können wieder nicht direkt die Werte im Array abrufen, sondern wir rufen jeweils einen Eintrag im Array auf, und dann die entsprechende Eigenschaft. So weit, so gut:
 
 ![Screenshot Balken 4](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_4.jpg) 
 
 
 ###Daten mit d3.js abbilden...
-Nachdem wir soweit gekommen sind, können wir uns kurz den Möglichkeiten von [d3.js](http://www.d3js.org) widmen. Diese library ist explizit dafür gedacht, Daten zu visualisieren und bietet sehr viel mehr als die bisher genutzten Befehle. Besonders praktisch ist, Daten mit erzeugten Elementen zu verbinden. Auf diesem Weg ist es z.B. möglich, Darstellungen dynamisch zu ändern, ohne alle Inhalte löschen und neu zeichnen zu müssen - die [Umsortierung der Balken der Wahlmotive](http://strategieanalysen.at/wahlen/bp2016/) basiert etwa darauf. Für eine kurze Einführung sollte man die [Introduction](https://d3js.org/) lesen.
+Nachdem wir soweit gekommen sind, können wir uns kurz den Möglichkeiten von [d3.js](http://www.d3js.org) widmen. Diese library ist explizit dafür gedacht, Daten zu visualisieren und bietet sehr viel mehr als die bisher genutzten Befehle. Besonders praktisch ist, Daten mit erzeugten Elementen zu verbinden. Auf diesem Weg ist es z.B. möglich, Darstellungen dynamisch zu ändern, ohne alle Inhalte löschen und neu zeichnen zu müssen - die [Umsortierung der Balken der Wahlmotive](http://strategieanalysen.at/wahlen/bp2016/) basiert beispielsweise darauf. Für eine kurze Einführung sollte man die [Introduction](https://d3js.org/) lesen.
 
-Um die Technik zu nutzen müssen wir ein paar Kleinigkeiten ändern. Unser object bleibt gleich, wir löschen aber unsere gesamte for-Schleife und schreiben stattdessen:
+Um die Technik zu nutzen müssen wir ein paar Kleinigkeiten ändern. Unser Object bleibt gleich, wir löschen aber unsere gesamte for-Schleife und schreiben stattdessen:
 ```javascript
 svg.selectAll("rect")
   .data(ergebnis)
@@ -410,13 +419,13 @@ svg.selectAll("rect")
   .style("fill", function(d) { return d.farbe; })
 ```
 
-Das führt zu folgendem Ablauf: Mit `selectAll` schauen wir, ob schon Rechtecke vorhanden sind und wählen diese allenfalls aus. Dann laden wir mit `data(ergebnis)` unseren array, mit `enter()` werden die Daten dann quasi ausgerollt. Im Hintergrund wird eine Art der for-Schleife ausgeführt und für jeden Eintrag im array ein Rechteck erzeugt. Wenn schon Rechtecke vorhanden waren, dann werden zuerst diese mit den neuen Daten überschrieben. Merke: `data()` benötigt immer einen array.
+Das führt zu folgendem Ablauf: Mit `selectAll` schauen wir, ob schon Rechtecke vorhanden sind und wählen diese allenfalls aus. Dann laden wir mit `data(ergebnis)` unseren array, mit `enter()` werden die Daten dann quasi ausgerollt. Im Hintergrund wird eine Art for-Schleife ausgeführt und für jeden Eintrag im Array ein Rechteck erzeugt. Wenn schon Rechtecke vorhanden waren, dann werden zuerst diese mit den neuen Daten überschrieben. Merke: `data()` benötigt immer einen Array.
 
 Bei der Festlegung der Attribute verwenden wir jetzt folgenden Code: `function(d, i) { }`. Das `d` steht für den jeweiligen Eintrag (gleichbedeutend mit dem `ergebnis[i]` von oben), `i` ist wieder eine Zählvariable. In dieser Logik werden alle Eigenschaften abgerufen und ausgegeben. Achtung: `d` kann immer ohne `i` stehen, `i` aber nie ohne `d`.
 
 
 ###...und was das bringt
-Das Ergebnis scheint gleich zu sein wie die Visualisierung via for-Schleife. Der Vorteil ist aber, dass die Daten aus unserem object jetzt an die gezeichneten Elemente gebunden und leicht abrufbar sind. Als Beispiel dafür fügen wir etwas Interaktivität dazu, und zwar soll das Ergebnis über dem Balken angezeigt werden, wenn man mit der Maus darüber fährt. Dazu erweitern wir den obigen Code um folgende Zeilen:
+Das Ergebnis scheint gleich zu sein wie die Visualisierung via for-Schleife. Der Vorteil ist aber, dass die Daten aus unserem Object jetzt an die gezeichneten Elemente gebunden und leicht abrufbar sind. Als Beispiel dafür fügen wir etwas Interaktivität hinzu, und zwar soll das Ergebnis über dem Balken angezeigt werden, wenn man mit der Maus darüber fährt. Dazu erweitern wir den obigen Code um folgende Zeilen:
 ```javascript
 svg.selectAll("rect")
   .data(ergebnis)
@@ -436,17 +445,17 @@ svg.selectAll("rect")
      });
 ```
 
-Der Ausdruck `.on(mouseover` bedeutet genau das, was er sagt - nämlich, dass etwas passieren soll, wenn der Mauszeiger über das Element fährt. In unserem Fall erzeugen wir nach dem bereits bekannten Muster einen Text. Ein Text in SVG benötigt nur zwei Attribute, nämlich
+Der Ausdruck `.on("mouseover", function() {})` bedeutet genau das, was er sagt - nämlich, dass etwas passieren soll, wenn der Mauszeiger über das Element fährt. In unserem Fall erzeugen wir nach dem bereits bekannten Muster einen Text. Ein Text in SVG benötigt nur zwei Attribute, nämlich
 * x - die Anfangsposition horizontal
 * y - die Anfangspoition vertikal
 
-Nachdem wir den Text beim Balken erscheinen lassen wollen, können wir zur Positionierung die gleichen Formeln verwenden wie für den Balken selbst. Der Text erhält noch eine Farbe, bevor schließlich mit `.text(d.wert)` der eigentliche Inhalt geschrieben wird.
+Nachdem wir den Text beim Balken erscheinen lassen wollen, können wir zur Positionierung die gleichen Formeln verwenden wie für den Balken selbst. Der Text erhält noch eine Farbe, bevor mit `.text(d.wert)` der eigentliche Inhalt geschrieben wird.
 
 Praktisch ist nun eben, dass wir den Wert nicht erst aus unserem array heraussuchen und zum passenden Balken zuordnen müssen. Wir können  stattdessen die Daten mit dem Ausdruck `function(d, i)` abrufen, wobei `d` wieder für den jeweiligen Eintrag im array steht, und `i` die Zählvariable ist. 
 
 Ein kurzer Test sollte zeigen, dass der `mouseover`-Effekt funktioniert (hoffentlich), das Ergebnis aber noch unbefriedigend ist. Erstens ist die Position des Textes am Anfang des Balkens unpassend, zweitens kann man nur einmal über den Balken fahren, da der Text dann permanent angezeigt wird.
 
-Feilen wir zunächst am Aussehen des Textes. Um ihn über dem Balken zu zentrieren, müssen wir zur x-Position die halbe Balkenbreite addieren. Hat man das gemacht, dass sieht das Ergebnis etwas besser aus:
+Feilen wir zunächst am Aussehen des Textes. Um ihn über dem Balken zu zentrieren, müssen wir zur x-Position die halbe Balkenbreite addieren:
 ```javascript
 svg.append("text")
   .attr("x", balken_breite * i + abstand * i + balken_breite / 2)
@@ -455,7 +464,7 @@ svg.append("text")
   .text(d.wert);
 ```
 
-Das Ergebnis sieht etwas besser aus, allerdings ist der Text leicht nach rechts verschoben. Das liegt daran, dass wir mit `x` die Anfangsposition definieren, also den Punkt, an dem der Text beginnt. Wir möchten aber, dass dieser Punkt in der Mitte des Textes liegt, was mit der Eigenschaft [`text-anchor`](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/text-anchor) erreicht werden kann:
+Das Ergebnis sieht etwas besser aus, allerdings ist der Text leicht nach rechts verschoben. Das liegt daran, dass wir mit `x` die Anfangsposition festlegen, also den Punkt, an dem der Text beginnt. Wir möchten aber, dass dieser Punkt in der Mitte des Textes liegt, was mit der Eigenschaft [`text-anchor`](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/text-anchor) erreicht werden kann:
 ```javascript
   .style("text-anchor", "middle")
 ```
@@ -469,7 +478,7 @@ Wenn wir schon dabei sind, dann machen wir den Text noch etwas größer und lass
 
 Da das Koordinatensystem oben links beginnt, müssen wir ein paar Pixel abziehen, um den Text nach oben zu schieben.
 
-Um den `mouseover`-Effekt zu komplettieren, müssen wir abschließend nur mehr festlegen, was mit dem Text passieren soll, sobald die Maus den Balken wieder verlässt. In unserem Fall soll der Text gelöscht werden.
+Um den `mouseover`-Effekt zu komplettieren, müssen wir abschließend festlegen, was mit dem Text passieren soll, sobald die Maus den Balken wieder verlässt. In unserem Fall soll der Text gelöscht werden.
 ```javascript
 svg.selectAll("rect")
   .data(ergebnis)
@@ -494,7 +503,7 @@ svg.selectAll("rect")
    });
 ```
 
-Mit `mouseout` rufen wir analog zu `mouseover` wieder eine Funktion auf. Diese benötigt diesmal werden `d` noch `i`, sie wählt einfach alle Text-Elemente auf dem SVG an und entfernt sie mittels `remove()`. Das `selectAll` ist dabei konsequent: Sollten noch andere Textteile irgendwo im SVG stehen, dann werden auch diese gelöscht.
+Mit `mouseout` rufen wir analog zu `mouseover` wieder eine Funktion auf. Diese benötigt diesmal weder `d` noch `i`, sie wählt einfach alle Text-Elemente auf dem SVG an und entfernt sie mittels `remove()`. Das `selectAll` ist dabei konsequent: Sollten noch andere Textteile irgendwo im SVG stehen, dann werden auch diese gelöscht.
 
 ![Screenshot Balken 5](https://github.com/ginseng666/graz_19102016/blob/master/img/balken_5.jpg) 
 
@@ -529,7 +538,7 @@ svg.selectAll("rect")
   .attr("height", function(d) { return max_hoehe * d.wert / 100; }); 
 ```
 
-`transition()` sagt dem Programm, dass es einen Übergang zwischen zwei Positionen erzeugen soll - bei uns zwischen Höhe `0` und Höhe `d.wert`. Der Ausdruck `duration(1000)` legt in Millisekunden fest, auf welchen Zeitraum dieser Prozess aufgeteilt werden soll. 1000 Millisekunden entsprechen 1 Sekunde.
+`transition()` sagt dem Programm, dass es einen Übergang zwischen zwei Positionen herstellen soll - bei uns zwischen Höhe `0` und Höhe `d.wert`. Der Ausdruck `duration(1000)` legt in Millisekunden fest, auf welchen Zeitraum dieser Prozess aufgeteilt werden soll. 1000 Millisekunden entsprechen 1 Sekunde.
 
 Soweit sich keine Tipp- oder sonstigen Fehler eingeschlichen haben sollten die Balken erscheinen - allerdings in einer verdrehten Version, sie fließen von oben nach unten. Programmatisch ist das richtig, wenn wir uns erinnern, dass wir die Balken - aufgrund des Koordinatensystems - genau so gezeichnet haben: Die y-Position ist das obere Ende, von dem aus wir den Balken in der Höhe des Werts nach unten zeichnen.
 

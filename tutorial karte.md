@@ -2,7 +2,9 @@
 
 Das folgende Tutorial versucht eine Schritt-für-Schritt-Einführung in die Visualisierung von Wahlergebnissen mittels Javascript/d3.js zu geben. Ziel ist, eine [Ergebnis-Landkarte](http://bl.ocks.org/ginseng666/1b950542b04bdf91d55a846b633bb77b) zu erstellen. Dazu werden Daten als `json` und `csv` geladen, ausgewertet, verknüpft und dargestellt. Als Grundlage wird das Ergebnis des ersten Wahlgangs der Bundespräsidentenwahl 2016 verwendet.
 
-Das Tutorial baut auf dem Beispiel zum [Balken-Diagramm](tutorial balkendiagramm.md) auf und setzt die dort behandelten Punkte voraus. Der Code verwendet Version 4 von d3.js.
+Das Tutorial baut auf dem Beispiel zum [Balken-Diagramm](tutorial balkendiagramm.md) auf und setzt die dort behandelten Punkte voraus. Der Code verwendet Version 4 von d3.js. 
+
+Als Vorwarnung: Einige der Befehle mögen kryptisch wirken, man versteht sie vielleicht erst im Lauf der Zeit. Sie sind aber so formuliert, dass man sie (zumeist) unverändert übernehmen kann.
 
 
 ###zu Landkarten generell
@@ -62,7 +64,7 @@ var gemeinden = d3.geoPath().projection(projection);
 projection.scale(1).translate([0, 0]);
 ```
 
-Wir definieren zunächst eine Variable `projection` mit der in d3.js vorgegebenen Mercator-Projektion. Danach erzeugen wir eine Variable `gemeinden`, in der die `geoPath()`-Funktion zusammen mit der Projektion gespeichert wird. Abschließend stellen wir eine Art Zoomstufe mit `scale` ein, vorerst auf 1, und legen fest, dass die Karte vorerst nicht verschoben wird (`translate`). Der letzte Punkt wird weiter unten noch wichtig.
+Wir definieren zunächst eine Variable `projection` mit der in d3.js vorgegebenen Mercator-Projektion. Danach erzeugen wir eine Variable `gemeinden`, in der die `geoPath()`-Funktion zusammen mit der Projektion gespeichert wird. Abschließend stellen wir eine Art Zoomstufe mit `scale` ein, vorerst auf 1, und legen fest, dass die Karte vorerst nicht verschoben wird (`translate`). Die letzten beiden Punkte setzen die Projektion quasi auf 0, bevor sie unten dann an die jeweilige Karte angepasst wird.
 
 Auf den ersten Blick mag das relativ unverständlich wirken. Dieser Ablauf ist für viele Kartendarstellungen identisch, man kann ihn daher einfach auch kopieren und verwenden. Das Verständnis stellt sich meistens im Lauf der Zeit ein.
 
@@ -75,7 +77,9 @@ d3.json("gemeinden.json", function(grenzen)
 ```
 
 Der Befehl `d3.json()` lädt die angegebene Datei, anschließend wird sie in der Funktion mit dem im Klammer angegebenen Namen weiterverarbeitet. Die Code-Zeile 
+
 `var map = topojson.feature(grenzen, grenzen.objects.gemeinden);`
+
 liest das topojson-Format unserer Datei ein und speichert sie als Object in die Variable `map`. Ergänzt man darunter noch `console.log(map);`, so kann man sich das Ergebnis dieser Operation genauer anschauen.
 
 Ein wichtiger Hinweis: Das Laden von Dateien in dieser Form geschieht in d3.js [asynchron](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Synchronous_and_Asynchronous_Requests), das heißt, dass während dem Ladevorgang das Programm "außerhalb" dieses Befehls weiterläuft. Das führt zu Problemen und Fehlern, wenn man dann bereits auf die Daten zugreifen will.
@@ -84,3 +88,46 @@ Eine Lösung ist, alle weiteren Befehle innerhalb der geschwungenen Klammern (al
 
 
 ###Landkarte positionieren, skalieren und zeichnen
+Nachdem wir die Kartendatei geladen haben, müssen wir sie richtig positionieren und richtig skalieren. Erscheint eine Landkarte trotz fehlerfreiem Code manchmal nicht am Bildschirm, dann liegt der Fehler oft bei diesen Punkten. 
+
+Die Skalierung erfolgt im Verhältnis zu den Variablen `width` und `height`, damit die Darstellung an den verfügbaren Platz angepasst ist. Um diese Werte abzustimmen, brauchen wir zunächst die Abmessungen der Karte selbst:
+```javascript
+var b = gemeinden.bounds(map);	
+var box = d3.geoBounds(map);	
+```
+
+Der Befehl `gemeinden.bounds(map)` gibt uns die Eckpunkte eines Rechtecks, das um die Karte gelegt wird. `d3.geoBounds(map)` macht dasselbe für die Geo-Koordinaten.
+
+Nun berechnen wir die Skalierung und verändern die Projektion entsprechend:
+```javascript
+var s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
+projection.scale(s).center([(box[0][0]+box[1][0])/2,(box[0][1]+box[1][1])/2]).translate([width / 2, height / 2]);
+```
+
+Auch dieser Teil mag zunächst überfordernd wirken, im Kern berechnet man aber nur die maximal mögliche Vergrößerung der Karte angesichts ihrer Abmessungen und des verfügbaren Platzes (Ausgangspunkt für `scale` ist immer 1). Dann sagt man der Projektion, wie stark sie die Karte vergrößern/verkleinern soll, zentriert sie horizontal und vertikal und verschiebt die Darstellung noch in die Mitte des Bildschirms.
+
+Nach diesen eher komplexen Vorarbeiten ist die Darstellung der Karte vergleichsweise simpel. Wir verwenden dazu das `path`-Element bei SVGs, laden die Karte mit `data(map.features)` und zeichnen für jeden Eintrag in diesem Array - für jede Gemeinde - die Grenzen in schwarz (`stroke`). Die Flächen bleiben leer (`fill`). Einmal mehr der Hinweis: Wenn man sich Variable in der Console anschaut, dann hilft das, die Abläufe zu verstehen.
+
+Hier der komplette Block, vom Laden der Datei bis zur Darstellung:
+
+```javascript
+d3.json("gemeinden.json", function(grenzen)
+  {
+  var map = topojson.feature(grenzen, grenzen.objects.gemeinden);
+
+  var b = gemeinden.bounds(map);	
+  var box = d3.geoBounds(map);	
+  var s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
+  projection.scale(s).center([(box[0][0]+box[1][0])/2,(box[0][1]+box[1][1])/2]).translate([width / 2, height / 2]);
+	
+  svg.selectAll("path")
+    .data(map.features)
+    .enter()
+    .append("path")
+    .attr("d", gemeinden)
+    .style("stroke", "black")
+    .style("fill", "none");
+  });
+```
+
+![Screenshot Karte 1](https://github.com/ginseng666/graz_19102016/blob/master/img/karte_1.jpg)

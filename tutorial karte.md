@@ -1,6 +1,6 @@
 #Ergebnis-Landkarte mit Javascript
 
-Das folgende Tutorial erstellt eine [Ergebnis-Landkarte](http://bl.ocks.org/ginseng666/1b950542b04bdf91d55a846b633bb77b) zum ersten Durchgang der Bundespräsidentenwahl 2016. Dazu werden Daten als `json` und `csv` geladen, ausgewertet, verknüpft und dargestellt.
+Das folgende Tutorial erstellt eine [Ergebnis-Landkarte](http://bl.ocks.org/ginseng666/2536e7e58914215cda1bf730ec5adbbc) zum ersten Durchgang der Bundespräsidentenwahl 2016. Dazu werden Daten als `json` und `csv` geladen, ausgewertet, verknüpft und dargestellt.
 
 Das Tutorial baut auf dem Beispiel zum [Balken-Diagramm](tutorial balkendiagramm.md) auf und setzt die dort behandelten Punkte voraus. Der Code verwendet Version 4 von d3.js. 
 
@@ -15,7 +15,7 @@ Geographische Grenzen für Österreich gibt es u.a. hier:
 * [Gemeindegrenzen als geojson/topojson](https://github.com/ginseng666/GeoJSON-TopoJSON-Austria)
 
 
-Inhaltlich und vor allem im politischen Kontext ist zu bedenken, dass die geographische Fläche einer Einheit nicht gleichbedeutend mit ihrer Bedeutung ist - oder anders ausgedrückt, die meisten Wahlberechtigten wohnen in Österreich in geographisch kleinräumigen Städten, wie das Projekt [austromorph](https://austromorph.space/) schön demonstriert.
+Inhaltlich und vor allem im politischen Kontext ist zu bedenken, dass die geographische Fläche einer Einheit nicht gleichbedeutend mit ihrer Bedeutung ist - oder anders ausgedrückt, die meisten Wahlberechtigten wohnen in Österreich in geographisch kleinräumigen Städten, wie das Projekt [austromorph](https://austromorph.space/) schön demonstriert. Man kann auch [hier](http://www.drawingdata.net/colormaps) mit Kartenformen und -farben experimentieren.
 
 
 ###Das Grundgerüst
@@ -150,11 +150,11 @@ Bevor wir sie zu einer csv-Datei weiterverarbeiten entwirren wir die verbundenen
 
 Jetzt können wir die Datei speichern. Um aus dem deutschen Excel eine gut verwendbare csv-Datei zu bekommen, muss man ein paar Umwege gehen:
 
-* Wir speichern die Excel-Datei mit "Speichern als" als "Unicode Text", damit die Umlaute erhalten bleiben
-* Diese Datei öffnen wir mit einem Text-Editor
-* Das Trennzeichen zwischen den Spalten - wahrscheinlich Tabulator - kopieren wir und ersetzen es via Suchen/Ersetzen mit einem ","
-* Die Datei speichern
-* Die Dateiendung auf ".csv" ändern
+* wir speichern die Excel-Datei mit "Speichern als" als "Unicode Text", damit die Umlaute erhalten bleiben
+* diese Datei öffnen wir mit einem Text-Editor
+* das Trennzeichen zwischen den Spalten - ein Tabulator - kopieren wir und ersetzen es via Suchen/Ersetzen mit einem ","
+* die Datei speichern
+* die Dateiendung auf ".csv" ändern
 
 
 Eine fertige Datei kann [hier](gemeindeergebnisse.csv) heruntergeladen werden.
@@ -198,10 +198,10 @@ Soweit gerüstet geht es nun nur mehr darum, die Karte und die Ergebnisse zu ver
 * die ersten drei Ziffern stehen für einen politischen Bezirk
 * die letzten zwei Ziffern erlauben die Unterscheidung, ob es sich bei einem Eintrag um eine Gemeinde handelt, um Wahlkarten (99), oder um eine höhere Ebene (00)
 
-Wenn wir uns die [topojson-Datei](gemeinden.json) in einem Texteditor anschauen, dann finden wir auch dort - ganzen Wirrwarr - die Gemeindekennziffern, bezeichnet als `iso`. Ein kleiner Unterschied sollte uns auffallen: In der Ergebnis-Datei beginnt die GKZ mit `G`, die iso beginnt aber gleich mit der Zahl. Darauf ist bei der Verknüpfung zu achten.
+Wenn wir uns die [topojson-Datei](gemeinden.json) in einem Texteditor anschauen, dann finden wir auch dort - im ganzen Wirrwarr - die Gemeindekennziffern, bezeichnet als `iso`. Ein kleiner Unterschied sollte uns auffallen: In der Ergebnis-Datei beginnt die GKZ mit `G`, die iso beginnt aber gleich mit der Zahl. Darauf ist bei der Verknüpfung zu achten.
 
 
-Um die Idee der Verknüpfung zu illustrieren, gehen wir zurück zum Code für die Kartenerstellung und ergänzen zwei Dinge: Wir stellen `.style("fill", "none")` ein sowie hängen einen `mouseover`-Effekt an:
+Um die Idee der Verknüpfung zu illustrieren, gehen wir zurück zum Code für die Kartenerstellung und ergänzen zwei Dinge: Wir stellen `.style("fill", "white")` ein sowie hängen einen `mouseover`-Effekt an:
 
 ```javascript
 svg.selectAll("path")
@@ -218,10 +218,10 @@ svg.selectAll("path")
 Wenn wir nun mit der Maus über die Landkarte fahren, dann erscheinen in der Console jeweils die mit der Gemeinde verknüpften Daten. Wir können somit leicht auf die Gemeindekennziffer `iso` zugreifen. Der nächste Schritt ist daher: Jede Gemeinde soll mit der Farbe der/des KandidatIn ausgefüllt werden, die/der die meisten Stimmen in der Gemeinde erhalten hat, die gerade mit einer bestimmten `GKZ` gezeichnet wurde.
 
 Dafür sind zwei Ergänzungen notwendig:
-* Wir müssen die/den jeweiligen Sieger/in pro Gemeinde berechnen
-* Wir müssen diese/n Sieger/in so speichern, dass wir mittels der `iso` darauf zugreifen können
+* Wir müssen die/den jeweiligen SiegerIn pro Gemeinde berechnen
+* Wir müssen diese/n SiegerIn so speichern, dass wir mittels der `iso` darauf zugreifen können
 
-Für den zweiten Punkt eignet sich ein Array nicht, da wir die Einträge zwar mittels ihrer Position finden können, aber nicht aufgrund eines Wertes. Man könnte die Ergebnisse zwar so ordnen, wie sie in der Kartendatei vorliegen, das ist aber fehleranfällig. Ein Object hingegen erlaubt uns genau das, was wir brauchen: Als `key` verwenden wir die `GKZ`, als `value` den Namen der/des Siegers pro Gemeinde.
+Für den zweiten Punkt eignet sich ein Array nicht, da wir die Einträge zwar mittels ihrer Position finden können, aber nicht aufgrund eines Wertes. Man könnte die Ergebnisse zwar so ordnen, wie sie in der Kartendatei vorliegen, das ist aber fehleranfällig. Ein Object hingegen erlaubt uns genau das, was wir brauchen: Als `key` verwenden wir die `GKZ`, als `value` den Namen der/des Siegerin/s pro Gemeinde.
 
 ```javascript
 d3.csv("gemeindeergebnisse.csv", function(ergebnisse)
@@ -269,6 +269,73 @@ Wir greifen mittels `d.properties.iso` auf die `GKZ` der gezeichneten Gemeinde z
 ![Screenshot Karte 2](https://github.com/ginseng666/graz_19102016/blob/master/img/karte_2.jpg)
 
 
-Von diesem Punkt aus kann man die Karte erweitern und verbessern - z.B. Ergebnisse via `mouseover` anzeigen, die Gemeindenamen inkludieren, die Farben nach den Stimmenanteilen schattieren usw.. Zwei Punkte sind noch zu beachten:
-* Die Ergebnisdatei enthält das Wiener Gesamtergebnis, das auch Wahlkarten beinhaltet - das ist streng genommen nicht korrekt, da alle anderen Gemeinden ohne Wahlkarten abgebildet sind. Hier könnte man den entsprechenden Eintrag ändern, bzw. auch die `iso` in der Kartendatei auf ein anderes Ergebnis verweisen lassen.
+Hier der finale Code - siehe v.a. die Verschachtelung der Blöcke, die die externen Dateien laden. Diese stellen sicher, dass der Code erst ausgeführt wird, wenn die Daten fertig geladen sind:
+```javascript
+<script>
+var width = window.innerWidth * 0.95;
+var height = window.innerHeight * 0.95;
+
+var kandidaten = ["Griss", "Hofer", "Hundstorfer", "Khol", "Lugner", "Van der Bellen"];
+var farben = {"Griss":"#8E88A7", "Hofer":"#2657A8", "Hundstorfer":"#C83D44", 
+"Khol":"#191919", "Lugner":"#E7B500", "Van der Bellen":"#89A04F"};
+
+var svg = d3.select("body").append("svg")
+	.attr("width", width)
+	.attr("height", height);
+	
+var projection = d3.geoMercator();
+var gemeinden = d3.geoPath().projection(projection);
+projection.scale(1).translate([0, 0]);
+
+d3.json("gemeinden.json", function(grenzen)
+	{
+	var map = topojson.feature(grenzen, grenzen.objects.gemeinden);
+		
+	var b = gemeinden.bounds(map);	
+	var box = d3.geoBounds(map);	
+	var s = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
+	projection.scale(s).center([(box[0][0]+box[1][0])/2,(box[0][1]+box[1][1])/2]).translate([width / 2, height / 2]);
+	
+	d3.csv("gemeindeergebnisse.csv", function(ergebnisse)
+		{
+		var siegerliste = {};
+		for (var i = 0; i < ergebnisse.length; i++)
+			{
+			for (var x in ergebnisse[i])
+				{
+				if (x != "GKZ" && x != "Gebietsname") ergebnisse[i][x] = +ergebnisse[i][x];
+				}
+      
+			var stimmen_sieger = 0;
+			var sieger = "";
+			
+			for (var k = 0; k < kandidaten.length; k++)
+				{
+				if (ergebnisse[i][kandidaten[k]] > stimmen_sieger)
+					{
+					sieger = kandidaten[k];
+					stimmen_sieger = ergebnisse[i][kandidaten[k]];
+					}
+				}
+    
+			siegerliste[ergebnisse[i].GKZ] = sieger;
+			}
+	
+		svg.selectAll("path")
+			.data(map.features)
+			.enter()
+			.append("path")
+			.attr("d", gemeinden)
+			.style("stroke", "black")
+			.style("fill", function(d) { return farben[siegerliste["G" + d.properties.iso]]; });
+		});
+	});
+
+</script>
+```
+
+Von diesem Punkt aus kann man die Karte erweitern und verbessern - z.B. Ergebnisse via `mouseover` anzeigen, die Gemeindenamen inkludieren, die Grenzen umfärben oder weglassen,  die Farben nach den Stimmenanteilen schattieren usw.. 
+
+Zwei Punkte sind noch zu beachten:
+* Wien als Gemeinde hat an sich keine eigene Gemeindekennziffer, es gibt nur Wien als Bundesland - und dieser Wert enthält schon die Wahlkarten. Das ist streng genommen nicht korrekt, da alle anderen Gemeinden ohne Wahlkarten abgebildet sind. Hier könnte man den entsprechenden Eintrag ändern, bzw. auch die `iso` in der Kartendatei auf ein anderes Ergebnis verweisen lassen.
 * Die `siegerliste` enthält neben den Gemeinden jetzt auch Bezirke, Bundesländer und Wahlkarten-Ergebnisse: Diese sollte man bei der Zusammenstellung filtern (z.B. mit einer `if`-Abfrage, die die letzten Stellen der `GKZ` überprüft?), um falsche Zuordnungen zu vermeiden (siehe Punkt 1 zu Wien, hier wird das Landes-Ergebnis verwendet).

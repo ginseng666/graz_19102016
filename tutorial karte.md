@@ -6,7 +6,7 @@ Das Tutorial baut auf dem Beispiel zum [Balken-Diagramm](tutorial balkendiagramm
 
 
 ###zu Landkarten generell
-Ergebnis-Landkarten zu Wahlen gehören wohl zum Standard-Repertoire der politischen Berichterstattung. Von der Darstellung der [Sieger](http://driven-by-data.net/2016/06/23/brexit-map.html) bis zu [Heat-Maps](http://orf.at/wahl/bp16/#ersterwahlgang/globus/hun) der Stimmenverteilung sind verschiedene Formen möglich und üblich. 
+Ergebnis-Landkarten zu Wahlen gehören wohl zum Standard-Repertoire von Visualisierungen. Von der Darstellung der [Sieger](http://driven-by-data.net/2016/06/23/brexit-map.html) bis zu [Heat-Maps](http://orf.at/wahl/bp16/#ersterwahlgang/globus/hun) der Stimmenverteilung sind verschiedenste Formen möglich. 
 
 Um eine Landkarte zu erzeugen benötigt man zunächst eine Datei mit den geometrischen Formen der Gemeinden, Bezirke oder Länder. Es gibt unterschiedliche Formate, in d3.js verwendet man üblicherweise das `topojson`-Format, das eine vergleichsweise kleine Dateigröße erlaubt. Der grundsätzliche Weg zu einer Karte ist [hier](https://bost.ocks.org/mike/map/) erläutert.
 
@@ -168,7 +168,9 @@ d3.csv("gemeindeergebnisse.csv", function(ergebnisse)
   });
 ```
 
-In der Console sehen wir nun einen Array von Objects, der für jede Zeile im Excel einen Eintrag enthält. Die Einträge in der ersten Zeile - die Spaltentitel - werden automatisch als `keys` verwendet. Vom Aufbau her ist das identisch mit der Ergebnis-Variablen im Balken-Diagramm-Beispiel. Was auch auffällt: Alle Zahlen stehen unter "". Das ist ein Nachteil des Arbeitens mit CSV, alle Werte werden standardmäßig als String geladen.
+In der Console sehen wir nun einen Array von Objects, der für jede Zeile im Excel einen Eintrag enthält. Die Einträge in der ersten Zeile - die Spaltentitel - werden automatisch als `keys` verwendet. Vom Aufbau her ist das identisch mit der Ergebnis-Variablen im Balken-Diagramm-Beispiel (zur Erinnerung: ein Object besteht immer aus `"key":value`-Paaren). 
+
+Was auch auffällt: Alle Zahlen stehen unter "". Das ist ein Nachteil des Arbeitens mit CSV, alle Werte werden standardmäßig als String geladen.
 
 Damit wir mit den Zahlen weiterarbeiten können, müssen wir sie wieder in Zahlen umwandeln. Dafür verwenden wir zwei ineinander geschachtelte Schleifen:
 ```javascript
@@ -249,4 +251,24 @@ d3.csv("gemeindeergebnisse.csv", function(ergebnisse)
 ```
 
 
-Zunächst legen wir eine neue Variable `siegerliste` an, die `{}` zeigen, dass es ein Object ist. Die nächsten Zeilen wandeln wie schon bekannt unsere Strings wieder in Zahlen um. Dann passiert Folgendes: 
+Zunächst legen wir eine neue Variable `siegerliste` an, die `{}` zeigen, dass sie ein Object ist. Die nächsten Zeilen wandeln wie schon bekannt unsere Strings wieder in Zahlen um. Dann passiert Folgendes: Innerhalb unserer for-Schleife definieren wir eine Variable `stimmen_sieger` und setzen sie auf 0, sowie eine Variable `sieger` und setzen sie auf einen leeren String.
+
+Anschließend bauen wir eine weitere Schleife ein, die den Array der Kandidatennamen durchläuft. Als Zählvariable nehmen wir `k`, da `i` ja schon in der übergeordneten Schleife verwendet wird. Dann folgt ein Vergleich: Wenn die Person an der Stelle `k` im Kandidaten-Array mehr Stimmen erhalten hat als momentan in der Variable `stimmen_sieger` stehen, dann setzen wir die Variable `sieger` auf diesen Namen (den momentanen Sieger). Die neue Hürde, die jemand überspringen muss, um `sieger` zu sein, setzen wir auf die aktuelle Stimmenanzahl.
+
+Nachdem alle KandidatInnen für die Gemeinde `i` durchlaufen sind, ergänzen wir einen Eintrag in der `siegerliste`: Dieser bekommt als `key` die `GKZ` der aktuellen Gemeinde, der dazugehörige `value` der Gemeinde ist der ermittelte `sieger`.
+
+
+###Karte einfärben
+Schließlich fehlt nur mehr, die Karte entsprechend einzufärben. Dafür müssen wir nur die Zeile mit der Farbfüllung ändern:
+```javascript
+.style("fill", function(d) { return farben[siegerliste["G" + d.properties.iso]]; })
+```
+
+Wir greifen mittels `d.properties.iso` auf die `GKZ` der gezeichneten Gemeinde zu. Da in der Ergebnisdatei die `GKZ` mit einem `G` beginnt, ergänzen wir dieses und rufen den darunter gespeicherten Wert auf. Mit diesem Wert, der wiederum ein `key` im Object `farben` ist, geben wir die gewünschte Farbe aus.
+
+![Screenshot Karte 2](https://github.com/ginseng666/graz_19102016/blob/master/img/karte_2.jpg)
+
+
+Von diesem Punkt aus kann man die Karte erweitern und verbessern - z.B. Ergebnisse via `mouseover` anzeigen, die Gemeindenamen inkludieren, die Farben nach den Stimmenanteilen schattieren usw.. Zwei Punkte sind noch zu beachten:
+* Die Ergebnisdatei enthält das Wiener Gesamtergebnis, das auch Wahlkarten beinhaltet - das ist streng genommen nicht korrekt, da alle anderen Gemeinden ohne Wahlkarten abgebildet sind. Hier könnte man den entsprechenden Eintrag ändern, bzw. auch die `iso` in der Kartendatei auf ein anderes Ergebnis verweisen lassen.
+* Die `siegerliste` enthält neben den Gemeinden jetzt auch Bezirke, Bundesländer und Wahlkarten-Ergebnisse: Diese sollte man bei der Zusammenstellung filtern (z.B. mit einer `if`-Abfrage, die die letzten Stellen der `GKZ` überprüft?), um falsche Zuordnungen zu vermeiden (siehe Punkt 1 zu Wien, hier wird das Landes-Ergebnis verwendet).
